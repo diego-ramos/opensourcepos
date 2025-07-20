@@ -50,8 +50,11 @@ return [
     "successful_updating"           => "You have successfully updated customer",
     "tax_code"                      => "Tax Code",
     "tax_id"                        => "Tax Id",
+    "tax_id_required"               => "Tax Id is a required field.",
+    "tax_id_type"                   => "Tax Id Type",
+    "tax_id_type_required"          => "Tax Id Type is a required field.",
     "taxable"                       => "Taxable",
     "total"                         => "Total spent",
     "update"                        => "Update Customer",
-    "rewards_package"               => "Rewards Package",
+    "rewards_package"               => "Rewards Package"
 ];

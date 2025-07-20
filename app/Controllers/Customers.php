@@ -7,6 +7,7 @@ use App\Libraries\Mailchimp_lib;
 use App\Models\Customer;
 use App\Models\Customer_rewards;
 use App\Models\Tax_code;
+use App\Models\Tax_id_type;
 use CodeIgniter\HTTP\DownloadResponse;
 use Config\OSPOS;
 use Config\Services;
@@ -19,6 +20,7 @@ class Customers extends Persons
     private Customer_rewards $customer_rewards;
     private Customer $customer;
     private Tax_code $tax_code;
+    private Tax_id_type $tax_id_type;
     private array $config;
 
     public function __construct()
@@ -28,6 +30,7 @@ class Customers extends Persons
         $this->customer_rewards = model(Customer_rewards::class);
         $this->customer = model(Customer::class);
         $this->tax_code = model(Tax_code::class);
+        $this->tax_id_type = model(Tax_id_type::class);
         $this->config = config(OSPOS::class)->settings;
 
         $encrypter = Services::encrypter();
@@ -226,6 +229,8 @@ class Customers extends Persons
                 }
             }
         }
+        // Retrieve tax id types
+        $data['tax_id_types'] = $this->tax_id_type->get_active()->getResultArray();
 
         echo view("customers/form", $data);
     }
@@ -264,6 +269,7 @@ class Customers extends Persons
             'consent'           => $this->request->getPost('consent') != null,
             'account_number'    => $this->request->getPost('account_number') == '' ? null : $this->request->getPost('account_number'),
             'tax_id'            => $this->request->getPost('tax_id'),
+            'tax_id_type'       => $this->request->getPost('tax_id_type', FILTER_SANITIZE_NUMBER_INT),
             'company_name'      => $this->request->getPost('company_name') == '' ? null : $this->request->getPost('company_name'),
             'discount'          => $this->request->getPost('discount') == '' ? 0.00 : parse_decimals($this->request->getPost('discount')),
             'discount_type'     => $this->request->getPost('discount_type') == null ? PERCENT : $this->request->getPost('discount_type', FILTER_SANITIZE_NUMBER_INT),

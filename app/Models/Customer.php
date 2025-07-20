@@ -27,7 +27,8 @@ class Customer extends Person
         'points',
         'date',
         'employee_id',
-        'consent'
+        'consent',
+        'tax_id_type'
     ];
 
 
@@ -91,7 +92,14 @@ class Customer extends Person
     public function get_info(?int $person_id): object
     {
         $builder = $this->db->table('customers');
+        $builder->select([
+            'customers.*',
+            'people.*',
+            'tax_id_types.code AS tax_id_type_code',
+            'tax_id_types.label AS tax_id_type_label'
+        ]);
         $builder->join('people', 'people.person_id = customers.person_id');
+        $builder->join('tax_id_types', 'tax_id_types.id = customers.tax_id_type', 'left');
         $builder->where('customers.person_id', $person_id);
         $query = $builder->get();
 

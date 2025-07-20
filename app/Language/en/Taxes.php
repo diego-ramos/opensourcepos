@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "active"                                 => "Active",
     "add_exception"                          => "Add Exception",
     "cascade"                                => "Cascade",
     "cascade_sequence"                       => "Cascade Sequence",
@@ -10,6 +11,8 @@ return [
     "confirm_restore"                        => "Are you sure you want to restore selected Tax Code(s)?",
     "default_tax_category"                   => "Default Tax Category",
     "default_tax_rate"                       => "Default Tax Rate",
+    "dian_id_type_code"                      => "Dian Code",
+    "dian_id_type_label"                     => "Label",         
     "error_adding_updating"                  => "Tax Code add or update failed",
     "group_seq"                              => "Group Seq",
     "jurisdiction_name"                      => "Jurisdiction Name",

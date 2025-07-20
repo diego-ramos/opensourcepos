@@ -12,6 +12,7 @@ use App\Models\Attribute;
 use App\Models\Customer_rewards;
 use App\Models\Dinner_table;
 use App\Models\Module;
+use App\Models\tax_id_type;
 use App\Models\Enums\Rounding_mode;
 use App\Models\Stock_location;
 use App\Models\Tax;
@@ -37,6 +38,7 @@ class Config extends Secure_Controller
     private Attribute $attribute;
     private Customer_rewards $customer_rewards;
     private Dinner_table $dinner_table;
+    private tax_id_type $tax_id_type;
     protected Module $module;
     private Stock_location $stock_location;
     private Tax $tax;
@@ -58,6 +60,7 @@ class Config extends Secure_Controller
         $this->module = model(Module::class);
         $this->stock_location = model(Stock_location::class);
         $this->tax = model(Tax::class);
+        $this->tax_id_type = model(tax_id_type::class);
         $this->config = config(OSPOS::class)->settings;
         $this->db = Database::connect();
 
@@ -234,6 +237,8 @@ class Config extends Secure_Controller
         $data['show_office_group'] = $this->module->get_show_office_group();
         $data['currency_code'] = $this->config['currency_code'] ?? '';
         $data['dbVersion'] = mysqli_get_server_info($this->db->getConnection());
+        $data['tax_id_types'] = $this->tax_id_type->get_all()->getResultArray();
+        $data['active_tax_id_types'] = $this->getActiveTaxIdTypes();
 
         // Load all the license statements, they are already XSS cleaned in the private function
         $data['licenses'] = $this->_licenses();
@@ -634,6 +639,19 @@ class Config extends Secure_Controller
         echo view('partial/dinner_tables', ['dinner_tables' => $dinner_tables]);
     }
 
+    /**
+     * @return void
+     */
+    public function getTaxIdTypes(): void
+    {
+        $tax_id_types = $this->tax_id_type->get_all()->getResultArray();
+        echo view('partial/tax_id_types', ['tax_id_types' => $tax_id_types]);
+    }
+    
+    private function getActiveTaxIdTypes(): array
+    {
+        return $this->tax_id_type->get_active()->getResultArray();
+    }
 
     /**
      * Gets all tax categories.
@@ -762,6 +780,57 @@ class Config extends Secure_Controller
         echo json_encode(['success' => $success, 'message' => lang('Config.saved_' . ($success ? '' : 'un') . 'successfully')]);
     }
 
+    // Saves all Colombia Electronic Invoice Data(add/update/delete)
+    public function postSaveColombiaElectronicInvoice(): void
+    {
+        $this->db->transStart();
+
+        $col_electronic_invoice_enable = $this->request->getPost('col_electronic_invoice_enable') != null;
+
+        $this->appconfig->save(['col_electronic_invoice_enable' => $col_electronic_invoice_enable]);
+
+        if ($col_electronic_invoice_enable) {
+            // Save or update DIAN Configuration
+            $dian_config['col_electronic_software_id'] = $this->request->getPost('col_electronic_software_id') ?? '';
+            $dian_config['col_electronic_pin'] = $this->request->getPost('col_electronic_pin') ?? '';
+            $dian_config['col_electronic_invoice_wsdl'] = $this->request->getPost('col_electronic_invoice_wsdl') ?? '';
+            $dian_config['col_electronic_invoice_cert_password'] = $this->request->getPost('col_electronic_invoice_cert_password') ?? '';
+            $dian_config['col_electronic_invoice_cert_path'] = $this->request->getPost('col_electronic_invoice_cert_path') ?? '';
+
+            $this->appconfig->batch_save($dian_config);
+            // Save or update  ID types
+            // We will save all types in the post, and delete the ones not in the post
+            $not_to_delete = [];
+            $tax_id_types = $this->request->getPost('tax_id_type');
+            if (is_array($tax_id_types)) {
+                foreach ($tax_id_types as $key => $type_data) {
+                    $type_data = [
+                        'code' => $type_data['code'],
+                        'label' => $type_data['label'],
+                        'active' => isset($type_data['active']) ? 1 : 0
+                    ];
+                    
+                    $result_id = $this->tax_id_type->save_value($type_data, $key);
+                    if ($result_id) {
+                        $not_to_delete[] = is_numeric($key) && $key > 0 ? $key : $result_id;
+                    }
+                }
+            }
+
+            // Delete types not in the post (only for existing types)
+            $deleted_types = $this->tax_id_type->get_all()->getResultArray();
+            foreach ($deleted_types as $type) {
+                if (!in_array($type['id'], $not_to_delete)) {
+                    $this->tax_id_type->delete_value($type['id']);
+                }
+            }
+        }
+
+        $this->db->transComplete();
+        $success = $this->db->transStatus();
+        echo json_encode(['success' => $success, 'message' => lang('Config.saved_' . ($success ? '' : 'un') . 'successfully')]);
+    }
+
     /**
      * Saves tax configuration. Used in app/Views/configs/tax_config.php
      *
@@ -784,7 +853,8 @@ class Config extends Secure_Controller
             'default_tax_code'          => $this->request->getPost('default_tax_code'),
             'default_tax_category'      => $this->request->getPost('default_tax_category'),
             'default_tax_jurisdiction'  => $this->request->getPost('default_tax_jurisdiction'),
-            'tax_id'                    => $this->request->getPost('tax_id', FILTER_SANITIZE_NUMBER_INT)
+            'tax_id'                    => $this->request->getPost('tax_id', FILTER_SANITIZE_NUMBER_INT),
+            'tax_id_type'               => $this->request->getPost('tax_id_type', FILTER_SANITIZE_NUMBER_INT)
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);

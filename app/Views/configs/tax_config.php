@@ -4,6 +4,7 @@
  * @var array $tax_category_options
  * @var array $tax_jurisdiction_options
  * @var string $controller_name
+ * @var array $tax_id_types
  * @var array $config
  */
 ?>
@@ -26,6 +27,20 @@
                     ]) ?>
                 </div>
             </div>
+
+            <?php if ($config['col_electronic_invoice_enable']): ?>
+                <div class="form-group form-group-sm">
+                    <?= form_label(lang('Config.tax_id_type'), 'tax_id_type', ['class' => 'required control-label col-xs-2']) ?>
+                    <div class="col-xs-2">
+                        <?= form_dropdown(
+                            'tax_id_type',
+                            array_column($active_tax_id_types, 'label', 'id'),
+                            $config['tax_id_type'],
+                            'class="form-control input-sm"'
+                        ) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <div class="form-group form-group-sm">
                 <?= form_label(lang('Config.tax_included'), 'tax_included', ['class' => 'control-label col-xs-2']) ?>

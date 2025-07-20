@@ -8,6 +8,7 @@
  * @var string $sales_tax_code_label
  * @var string $employee
  * @var array $config
+ * @var array $tax_id_types
  */
 ?>
 
@@ -118,6 +119,20 @@
                         ]) ?>
                     </div>
                 </div>
+
+                <?php if ($config['col_electronic_invoice_enable']): ?>
+                    <div class="form-group form-group-sm">
+                        <?= form_label(lang('Customers.tax_id_type'), 'tax_id_type', ['class' => 'required control-label col-xs-3']) ?>
+                        <div class="col-xs-8">
+                            <?= form_dropdown(
+                                'tax_id_type',
+                                array_column($tax_id_types, 'label', 'id'),
+                                $person_info->tax_id_type,
+                                'class="form-control input-sm"'
+                            ) ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <?php if ($config['customer_reward_enable']): ?>
                     <div class="form-group form-group-sm">

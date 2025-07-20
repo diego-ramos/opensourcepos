@@ -36,6 +36,9 @@
         <a data-toggle="tab" href="#table_tab" title="<?= lang('Config.table_configuration') ?>"><?= lang('Config.table') ?></a>
     </li>
     <li role="presentation">
+        <a data-toggle="tab" href="#col_electronic_invoice_tab" title="<?= lang('Config.col_electronic_invoice_configuration') ?>"><?= lang('Config.col_electronic_invoice') ?></a>
+    </li>
+    <li role="presentation">
         <a data-toggle="tab" href="#system_tab" title="<?= lang('Config.system_conf') ?>"><?= lang('Config.system_conf') ?></a>
     </li>
 </ul>
@@ -70,6 +73,9 @@
     </div>
     <div class="tab-pane" id="table_tab">
         <?= view('configs/table_config') ?>
+    </div>
+    <div class="tab-pane" id="col_electronic_invoice_tab">
+        <?= view('configs/col_electronic_invoice_config') ?>
     </div>
     <div class="tab-pane" id="system_tab">
         <?= view('configs/system_config') ?>
