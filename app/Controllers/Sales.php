@@ -664,8 +664,15 @@ class Sales extends Secure_Controller
             $data['company_info'] .= "\n" . lang('Sales.account_number') . ": " . $this->config['account_number'];
         }
 
+        $customer_id = $this->sale_lib->get_customer();
+        $customer_info = $this->_load_customer_data($customer_id, $data);
+        
         if ($this->config['tax_id'] != '') {
-            $data['company_info'] .= "\n" . lang('Sales.tax_id') . ": " . $this->config['tax_id'];
+            $tax_id_label = lang('Sales.tax_id');
+            if ($this->config['col_electronic_invoice_enable']){
+                $tax_id_label = $this->tax_lib->get_tax_id_type_label($this->config['tax_id_type']);
+            }
+            $data['company_info'] .= "\n" . $tax_id_label .": " . $this->config['tax_id'];
         }
 
         $data['invoice_number_enabled'] = $this->sale_lib->is_invoice_mode();
@@ -674,14 +681,12 @@ class Sales extends Secure_Controller
         $data['print_after_sale'] = $this->session->get('sales_print_after_sale');
         $data['price_work_orders'] = $this->sale_lib->is_price_work_orders();
         $data['email_receipt'] = $this->sale_lib->is_email_receipt();
-        $customer_id = $this->sale_lib->get_customer();
         $invoice_number = $this->sale_lib->get_invoice_number();
         $data["invoice_number"] = $invoice_number;
         $work_order_number = $this->sale_lib->get_work_order_number();
         $data["work_order_number"] = $work_order_number;
         $quote_number = $this->sale_lib->get_quote_number();
         $data["quote_number"] = $quote_number;
-        $customer_info = $this->_load_customer_data($customer_id, $data);
 
         if ($customer_info != null) {
             $data["customer_comments"] = $customer_info->comments;
@@ -1002,7 +1007,11 @@ class Sales extends Secure_Controller
             }
 
             if ($customer_info->tax_id != '') {
-                $data['customer_info'] .= "\n" . lang('Sales.tax_id') . ": " . $customer_info->tax_id;
+                $tax_id_label = lang('Sales.tax_id');
+                if ($this->config['col_electronic_invoice_enable']){
+                    $tax_id_label = $this->tax_lib->get_tax_id_type_label($customer_info->tax_id_type);
+                }
+                $data['customer_info'] .= "\n" . $tax_id_label . ": " . $customer_info->tax_id;
             }
             $data['tax_id'] = $customer_info->tax_id;
         }
@@ -1076,7 +1085,11 @@ class Sales extends Secure_Controller
             $data['company_info'] .= "\n" . lang('Sales.account_number') . ": " . $this->config['account_number'];
         }
         if ($this->config['tax_id'] != '') {
-            $data['company_info'] .= "\n" . lang('Sales.tax_id') . ": " . $this->config['tax_id'];
+            $tax_id_label = lang('Sales.tax_id');
+            if ($this->config['col_electronic_invoice_enable']){
+                $tax_id_label = $this->tax_lib->get_tax_id_type_label($this->config['tax_id_type']);
+            }
+            $data['company_info'] .= "\n" . $tax_id_label .": " . $this->config['tax_id'];
         }
 
         $data['barcode'] = $this->barcode_lib->generate_receipt_barcode($data['sale_id']);

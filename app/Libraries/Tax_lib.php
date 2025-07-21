@@ -9,6 +9,7 @@ use App\Models\Sale;
 use App\Models\Tax;
 use App\Models\Tax_category;
 use App\Models\Tax_code;
+use App\Models\Tax_id_type;
 use App\Models\Tax_jurisdiction;
 use App\Libraries\Sale_lib;
 use Config\OSPOS;
@@ -29,6 +30,7 @@ class Tax_lib
     private Tax $tax;
     private Tax_category $tax_category;
     private Tax_code $tax_code;
+    private Tax_id_type $tax_id_type; 
     private Tax_jurisdiction $tax_jurisdiction;
     private array $config;
 
@@ -42,6 +44,7 @@ class Tax_lib
         $this->tax = model(Tax::class);
         $this->tax_category = model(Tax_category::class);
         $this->tax_code = model(Tax_code::class);
+        $this->tax_id_type = model(Tax_id_type::class);
         $this->tax_jurisdiction = model(Tax_jurisdiction::class);
         $this->config = config(OSPOS::class)->settings;
     }
@@ -472,5 +475,11 @@ class Tax_lib
 
         return '<option value=\"' . Tax_lib::TAX_TYPE_EXCLUDED . '\" ' . $s1 . '> ' . lang('Taxes.sales_tax') . '</option>'
             . '<option value=\"' . Tax_lib::TAX_TYPE_INCLUDED . '\" ' . $s2 . '> ' . lang('Taxes.vat_tax') . '</option>';
+    }
+
+    public function get_tax_id_type_label($tax_id_type): ?string
+    {
+        $type = $this->tax_id_type->find($tax_id_type);
+        return $type['label'] ?? null;
     }
 }
