@@ -86,3 +86,4 @@ auth.json
 /app/Database/database.sql
 /writable/cache/settings
 /.env.bak
+.vscode/launch.json
