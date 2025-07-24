@@ -16,8 +16,13 @@ class AddColElectronicInvoiceEnableToAppConfig extends Migration
             ['key' => 'col_electronic_pin', 'value' => '0'],
             ['key' => 'col_electronic_invoice_wsdl', 'value' => ''],
             ['key' => 'col_electronic_invoice_cert_password', 'value' => ''],
-            ['key' => 'col_electronic_invoice_cert_path', 'value' => ''], 
-            ['key' => 'tax_id_type', 'value' => '0'] // Default to 0, meaning no specific tax ID type selected
+            ['key' => 'col_electronic_invoice_cert_key_path', 'value' => ''], 
+            ['key' => 'col_electronic_invoice_cert_crt_path', 'value' => ''], 
+            ['key' => 'tax_id_type', 'value' => '0'],
+            ['key' => 'col_electronic_range_min', 'value' => '0'],
+            ['key' => 'col_electronic_range_max', 'value' => '0'],
+            ['key' => 'col_electronic_prefix', 'value' => ''],
+            ['key' => 'col_electronic_tech_id', 'value' => '']
         ]);
     }
 
@@ -30,7 +35,13 @@ class AddColElectronicInvoiceEnableToAppConfig extends Migration
             'col_electronic_pin',
             'col_electronic_invoice_wsdl',
             'col_electronic_invoice_cert_password',
-            'col_electronic_invoice_cert_path'
+            'col_electronic_invoice_cert_key_path',
+            'col_electronic_invoice_cert_crt_path',
+            'tax_id_type',
+            'col_electronic_range_min',
+            'col_electronic_range_max',
+            'col_electronic_prefix',
+            'col_electronic_tech_id'
         ];
 
         $this->db->table('ospos_app_config')

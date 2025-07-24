@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "542670709bf2895409e102dd78bc9b32",
+    "content-hash": "7e7c47bb67f9126271d5d3638ca9a606",
     "packages": [
         {
             "name": "codeigniter4/framework",
@@ -79,6 +79,43 @@
                 "source": "https://github.com/codeigniter4/CodeIgniter4"
             },
             "time": "2025-01-19T18:31:34+00:00"
+        },
+        {
+            "name": "diego-ramos/dian-facturacion",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:diego-ramos/dian-facturacion-php.git",
+                "reference": "a232ec495ceb8ccd908896d4ea3e146476439c3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/diego-ramos/dian-facturacion-php/zipball/a232ec495ceb8ccd908896d4ea3e146476439c3c",
+                "reference": "a232ec495ceb8ccd908896d4ea3e146476439c3c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "ext-soap": "*",
+                "php": ">=7.4",
+                "robrichards/xmlseclibs": "^3.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DianFE\\": "src/"
+                }
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Módulo PHP para enviar facturas electrónicas a la DIAN (Colombia) usando software propio",
+            "support": {
+                "source": "https://github.com/diego-ramos/dian-facturacion-php/tree/main",
+                "issues": "https://github.com/diego-ramos/dian-facturacion-php/issues"
+            },
+            "time": "2025-07-24T01:44:08+00:00"
         },
         {
             "name": "dompdf/dompdf",
@@ -561,6 +598,48 @@
                 }
             ],
             "time": "2023-09-16T08:58:52+00:00"
+        },
+        {
+            "name": "robrichards/xmlseclibs",
+            "version": "3.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/robrichards/xmlseclibs.git",
+                "reference": "2bdfd742624d739dfadbd415f00181b4a77aaf07"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/2bdfd742624d739dfadbd415f00181b4a77aaf07",
+                "reference": "2bdfd742624d739dfadbd415f00181b4a77aaf07",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">= 5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RobRichards\\XMLSecLibs\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "A PHP library for XML Security",
+            "homepage": "https://github.com/robrichards/xmlseclibs",
+            "keywords": [
+                "security",
+                "signature",
+                "xml",
+                "xmldsig"
+            ],
+            "support": {
+                "issues": "https://github.com/robrichards/xmlseclibs/issues",
+                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.3"
+            },
+            "time": "2024-11-20T21:13:56+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
@@ -8367,13 +8446,15 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "diego-ramos/dian-facturacion": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "ext-intl": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

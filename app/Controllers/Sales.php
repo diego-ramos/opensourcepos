@@ -13,6 +13,7 @@ use App\Models\Dinner_table;
 use App\Models\Employee;
 use App\Models\Giftcard;
 use App\Models\Inventory;
+use App\Models\InvoiceDianQueue;
 use App\Models\Item;
 use App\Models\Item_kit;
 use App\Models\Sale;
@@ -771,6 +772,15 @@ class Sales extends Secure_Controller
                     $data['error_message'] = lang('Sales.transaction_failed');
                 } else {
                     $data['barcode'] = $this->barcode_lib->generate_receipt_barcode($data['sale_id']);
+                    // If the invoice is enabled for electronic invoicing then we need to queue it for processing
+                    if ($this->config['col_electronic_invoice_enable']) {
+                        $invoiceDianQueue = model(InvoiceDianQueue::class);
+                        $invoiceDianQueue->insert([
+                            'sale_id' => $data['sale_id_num'],
+                            'status' => 'pending'
+                        ]);
+                    }
+
                     echo view('sales/' . $invoice_view, $data);
                     $this->sale_lib->clear_all();
                 }

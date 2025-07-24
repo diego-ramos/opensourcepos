@@ -795,7 +795,12 @@ class Config extends Secure_Controller
             $dian_config['col_electronic_pin'] = $this->request->getPost('col_electronic_pin') ?? '';
             $dian_config['col_electronic_invoice_wsdl'] = $this->request->getPost('col_electronic_invoice_wsdl') ?? '';
             $dian_config['col_electronic_invoice_cert_password'] = $this->request->getPost('col_electronic_invoice_cert_password') ?? '';
-            $dian_config['col_electronic_invoice_cert_path'] = $this->request->getPost('col_electronic_invoice_cert_path') ?? '';
+            $dian_config['col_electronic_invoice_cert_key_path'] = $this->request->getPost('col_electronic_invoice_cert_key_path') ?? '';
+            $dian_config['col_electronic_invoice_cert_crt_path'] = $this->request->getPost('col_electronic_invoice_cert_crt_path') ?? '';
+            $dian_config['col_electronic_range_min'] = $this->request->getPost('col_electronic_range_min') ?? '';
+            $dian_config['col_electronic_range_max'] = $this->request->getPost('col_electronic_range_max') ?? '';
+            $dian_config['col_electronic_prefix'] = $this->request->getPost('col_electronic_prefix') ?? '';
+            $dian_config['col_electronic_tech_id'] = $this->request->getPost('col_electronic_tech_id') ?? '';
 
             $this->appconfig->batch_save($dian_config);
             // Save or update  ID types
