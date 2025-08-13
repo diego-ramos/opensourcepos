@@ -550,7 +550,10 @@ helper('url');
                                 <div class="col-xs-6">
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-addon input-sm">#</span>
-                                        <?= form_input(['name' => 'sales_invoice_number', 'id' => 'sales_invoice_number', 'class' => 'form-control input-sm', 'value' => $invoice_number]) ?>
+                                        <?php 
+                                        $readOnly = $config['col_electronic_invoice_enable'] ? 'readonly' : '';
+                                        ?>
+                                        <?= form_input(['name' => 'sales_invoice_number', 'id' => 'sales_invoice_number', 'class' => 'form-control input-sm', 'value' => $invoice_number, 'readonly' => $readOnly]) ?>
                                     </div>
                                 </div>
                             </div>

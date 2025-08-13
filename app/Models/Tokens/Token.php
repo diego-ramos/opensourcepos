@@ -42,6 +42,7 @@ abstract class Token extends Model
             new Token_customer(),
             new Token_invoice_count(),
             new Token_invoice_sequence(),
+            new Token_invoice_dian(),
             new Token_quote_sequence(),
             new Token_suspended_invoice_count(),
             new Token_quote_sequence(),

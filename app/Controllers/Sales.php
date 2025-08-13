@@ -21,6 +21,7 @@ use App\Models\Stock_location;
 use App\Models\Tokens\Token_invoice_count;
 use App\Models\Tokens\Token_customer;
 use App\Models\Tokens\Token_invoice_sequence;
+use App\Models\Tokens\Token_invoice_dian;
 use Config\Services;
 use Config\OSPOS;
 use ReflectionException;
@@ -1207,12 +1208,19 @@ class Sales extends Secure_Controller
         $temp_invoice_number = $this->sale_lib->get_invoice_number();
         $invoice_format = $this->config['sales_invoice_format'];
 
-        if ($temp_invoice_number == null || $temp_invoice_number == '') {
-            $temp_invoice_number = $this->token_lib->render($invoice_format, [], false);
+        if($this->sale_lib->is_invoice_mode()){
+            if ($temp_invoice_number == null || $temp_invoice_number == '') {
+                $temp_invoice_number = $this->token_lib->render($invoice_format, [], false);
+            }
+
+            if(!ctype_digit((string) $temp_invoice_number)) {
+                $data['error'] = $temp_invoice_number;
+                $data['invoice_number'] = 'error';
+            }else {
+                $data['invoice_number'] = $temp_invoice_number;
+            }
         }
-
-        $data['invoice_number'] = $temp_invoice_number;
-
+        
         $data['print_after_sale'] = $this->sale_lib->is_print_after_sale();
         $data['price_work_orders'] = $this->sale_lib->is_price_work_orders();
 
