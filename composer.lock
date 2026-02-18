@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dabcafbc95daca6bf4e45d927773c169",
+    "content-hash": "19aa52720c9913c24f5525902acd88a1",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -77,16 +77,16 @@
         },
         {
             "name": "codeigniter4/framework",
-            "version": "v4.6.2",
+            "version": "v4.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/codeigniter4/framework.git",
-                "reference": "dbc07dc8cb260b5abe5e15d3ed316941183e7385"
+                "reference": "116e0919590a412c09d2b9e4f6b8addda18224d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codeigniter4/framework/zipball/dbc07dc8cb260b5abe5e15d3ed316941183e7385",
-                "reference": "dbc07dc8cb260b5abe5e15d3ed316941183e7385",
+                "url": "https://api.github.com/repos/codeigniter4/framework/zipball/116e0919590a412c09d2b9e4f6b8addda18224d8",
+                "reference": "116e0919590a412c09d2b9e4f6b8addda18224d8",
                 "shasum": ""
             },
             "require": {
@@ -100,7 +100,7 @@
                 "codeigniter/coding-standard": "^1.7",
                 "fakerphp/faker": "^1.24",
                 "friendsofphp/php-cs-fixer": "^3.47.1",
-                "kint-php/kint": "^6.0",
+                "kint-php/kint": "^6.1",
                 "mikey179/vfsstream": "^1.6.12",
                 "nexusphp/cs-config": "^3.6",
                 "phpunit/phpunit": "^10.5.16 || ^11.2",
@@ -147,7 +147,7 @@
                 "slack": "https://codeigniterchat.slack.com",
                 "source": "https://github.com/codeigniter4/CodeIgniter4"
             },
-            "time": "2025-07-26T15:39:12+00:00"
+            "time": "2026-02-01T17:59:34+00:00"
         },
         {
             "name": "diego-ramos/dian-facturacion",
@@ -155,7 +155,7 @@
             "dist": {
                 "type": "path",
                 "url": "c:/Users/diego/Documents/Open_POS/dian-facturacion-php",
-                "reference": "3ea08ce01b79a85b39afe6e76d64db5b000060f3"
+                "reference": "863a68d45497b47e4d1dd0fda33cc46f6a4af769"
             },
             "require": {
                 "ext-openssl": "*",

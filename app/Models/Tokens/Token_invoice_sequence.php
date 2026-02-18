@@ -35,6 +35,9 @@ class Token_invoice_sequence extends Token
      */
     public function get_value(bool $save = true): string
     {
-        return $this->appconfig->acquire_next_invoice_sequence($save);
-    }
+        if (empty($this->value)) {
+            return $this->appconfig->acquire_next_invoice_sequence($save);
+        }
+        return $this->value;
+     }
 }
