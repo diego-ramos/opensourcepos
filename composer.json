@@ -51,7 +51,7 @@
 	"require": {
 		"php": "^8.1",
 		"ext-intl": "*",
-		"codeigniter4/framework": "4.6.2",
+		"codeigniter4/framework": "^4.6.3",
 		"diego-ramos/dian-facturacion": "dev-main",
 		"dompdf/dompdf": "^2.0.3",
 		"ezyang/htmlpurifier": "^4.17",

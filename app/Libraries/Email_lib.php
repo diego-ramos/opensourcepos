@@ -5,6 +5,7 @@ namespace app\Libraries;
 use CodeIgniter\Email\Email;
 use CodeIgniter\Encryption\Encryption;
 use CodeIgniter\Encryption\EncrypterInterface;
+use CodeIgniter\Encryption\Exceptions\EncryptionException;
 use Config\OSPOS;
 use Config\Services;
 
@@ -28,8 +29,15 @@ class Email_lib
         $encrypter = Services::encrypter();
 
         $smtp_pass = $this->config['smtp_pass'];
-        if (!empty($smtp_pass)) {
-            $smtp_pass = $encrypter->decrypt($smtp_pass);
+        if (!empty($smtp_pass) && check_encryption()) {
+            try {
+                $smtp_pass = $encrypter->decrypt($smtp_pass);
+            } catch (\EncryptionException $e) {
+                // Decryption failed, use the original value
+                log_message('error', 'SMTP password decryption failed: ' . $e->getMessage());
+                $smtp_pass = '';
+            }
+
         }
 
         $email_config = [
@@ -63,12 +71,13 @@ class Email_lib
 
         if (!empty($attachment)) {
             $email->attach($attachment);
+            $email->setAttachmentCID($attachment);
         }
 
         $result = $email->send();
 
         if (!$result) {
-            error_log($email->printDebugger());
+            log_message('error', $email->printDebugger());
         }
 
         return $result;

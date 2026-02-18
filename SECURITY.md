@@ -18,7 +18,8 @@ We release patches for security vulnerabilities. Which versions are eligible to 
 | --------- | -------------------------------------------------- |
 | 7.3       | 3.3.5                                              |
 | 9.8       | 3.3.6                                              |
+| 6.8       | 3.4.2                                              |
 
 ## Reporting a Vulnerability
 
-Please report (suspected) security vulnerabilities to **[jekkos@steganos.dev](mailto:jekkos@steganos.dev)**. You will receive a response from us within 48 hours. If the issue is confirmed, we will release a patch as soon as possible depending on complexity but historically within a few days.
+Please report (suspected) security vulnerabilities to **[jeroen@steganos.dev](mailto:jeroen@steganos.dev)**. You will receive a response from us within 48 hours. If the issue is confirmed, we will release a patch as soon as possible depending on complexity but historically within a few days.
