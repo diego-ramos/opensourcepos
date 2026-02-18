@@ -482,4 +482,10 @@ class Tax_lib
         $type = $this->tax_id_type->find($tax_id_type);
         return $type['label'] ?? null;
     }
+
+    public function get_tax_id_type_code($tax_id_type): ?string
+    {
+        $type = $this->tax_id_type->find($tax_id_type);
+        return $type['code'] ?? null;
+    }
 }

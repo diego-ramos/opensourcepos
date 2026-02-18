@@ -29,7 +29,7 @@ use stdClass;
 
 class Sales extends Secure_Controller
 {
-    protected $helpers = ['file'];
+    protected $helpers = ['file', 'sale'];
     private Barcode_lib $barcode_lib;
     private Email_lib $email_lib;
     private Sale_lib $sale_lib;
@@ -966,68 +966,7 @@ class Sales extends Secure_Controller
      */
     private function _load_customer_data(int $customer_id, array &$data, bool $stats = false): array|string|stdClass|null    // TODO: Hungarian notation
     {
-        $customer_info = '';
-
-        if ($customer_id != NEW_ENTRY) {
-            $customer_info = $this->customer->get_info($customer_id);
-            $data['customer_id'] = $customer_id;
-
-            if (!empty($customer_info->company_name)) {
-                $data['customer'] = $customer_info->company_name;
-            } else {
-                $data['customer'] = $customer_info->first_name . ' ' . $customer_info->last_name;
-            }
-
-            $data['first_name'] = $customer_info->first_name;
-            $data['last_name'] = $customer_info->last_name;
-            $data['customer_email'] = $customer_info->email;
-            $data['customer_address'] = $customer_info->address_1;
-
-            if (!empty($customer_info->zip) || !empty($customer_info->city)) {
-                $data['customer_location'] = $customer_info->zip . ' ' . $customer_info->city . "\n" . $customer_info->state;
-            } else {
-                $data['customer_location'] = '';
-            }
-
-            $data['customer_account_number'] = $customer_info->account_number;
-            $data['customer_discount'] = $customer_info->discount;
-            $data['customer_discount_type'] = $customer_info->discount_type;
-            $package_id = $this->customer->get_info($customer_id)->package_id;
-
-            if ($package_id != null) {
-                $package_name = $this->customer_rewards->get_name($package_id);
-                $points = $this->customer->get_info($customer_id)->points;
-                $data['customer_rewards']['package_id'] = $package_id;
-                $data['customer_rewards']['points'] = empty($points) ? 0 : $points;
-                $data['customer_rewards']['package_name'] = $package_name;
-            }
-
-            if ($stats) {
-                $cust_stats = $this->customer->get_stats($customer_id);
-                $data['customer_total'] = empty($cust_stats) ? 0 : $cust_stats->total;
-            }
-
-            $data['customer_info'] = implode("\n", [
-                $data['customer'],
-                $data['customer_address'],
-                $data['customer_location']
-            ]);
-
-            if ($data['customer_account_number']) {
-                $data['customer_info'] .= "\n" . lang('Sales.account_number') . ": " . $data['customer_account_number'];
-            }
-
-            if ($customer_info->tax_id != '') {
-                $tax_id_label = lang('Sales.tax_id');
-                if ($this->config['col_electronic_invoice_enable']){
-                    $tax_id_label = $this->tax_lib->get_tax_id_type_label($customer_info->tax_id_type);
-                }
-                $data['customer_info'] .= "\n" . $tax_id_label . ": " . $customer_info->tax_id;
-            }
-            $data['tax_id'] = $customer_info->tax_id;
-        }
-
-        return $customer_info;
+        return load_customer_data($customer_id, $data, $stats);
     }
 
     /**
@@ -1036,98 +975,16 @@ class Sales extends Secure_Controller
      */
     private function _load_sale_data($sale_id): array    // TODO: Hungarian notation
     {
-        $this->sale_lib->clear_all();
-        $cash_rounding = $this->sale_lib->reset_cash_rounding();
-        $data['cash_rounding'] = $cash_rounding;
+        return get_sale_data($sale_id);
+    }
 
-        $sale_info = $this->sale->get_info($sale_id)->getRowArray();
-        $this->sale_lib->copy_entire_sale($sale_id);
-        $data = [];
-        $data['cart'] = $this->sale_lib->get_cart();
-        $data['payments'] = $this->sale_lib->get_payments();
-        $data['selected_payment_type'] = $this->sale_lib->get_payment_type();
-
-        $tax_details = $this->tax_lib->get_taxes($data['cart'], $sale_id);
-        $data['taxes'] = $this->sale->get_sales_taxes($sale_id);
-        $data['discount'] = $this->sale_lib->get_discount();
-        $data['transaction_time'] = to_datetime(strtotime($sale_info['sale_time']));
-        $data['transaction_date'] = to_date(strtotime($sale_info['sale_time']));
-        $data['show_stock_locations'] = $this->stock_location->show_locations('sales');
-
-        $data['include_hsn'] = (bool)$this->config['include_hsn'];
-
-        // Returns 'subtotal', 'total', 'cash_total', 'payment_total', 'amount_due', 'cash_amount_due', 'payments_cover_total'
-        $totals = $this->sale_lib->get_totals($tax_details[0]);
-        $this->session->set('cash_adjustment_amount', $totals['cash_adjustment_amount']);
-        $data['subtotal'] = $totals['subtotal'];
-        $data['payments_total'] = $totals['payment_total'];
-        $data['payments_cover_total'] = $totals['payments_cover_total'];
-        $data['cash_mode'] = $this->session->get('cash_mode');    // TODO: Duplicated code.
-        $data['prediscount_subtotal'] = $totals['prediscount_subtotal'];
-        $data['cash_total'] = $totals['cash_total'];
-        $data['non_cash_total'] = $totals['total'];
-        $data['cash_amount_due'] = $totals['cash_amount_due'];
-        $data['non_cash_amount_due'] = $totals['amount_due'];
-
-        if ($data['cash_mode'] && ($data['selected_payment_type'] === lang('Sales.cash') || $data['payments_total'] > 0)) {
-            $data['total'] = $totals['cash_total'];
-            $data['amount_due'] = $totals['cash_amount_due'];
-        } else {
-            $data['total'] = $totals['total'];
-            $data['amount_due'] = $totals['amount_due'];
-        }
-
-        $data['amount_change'] = $data['amount_due'] * -1;
-
-        $employee_info = $this->employee->get_info($this->sale_lib->get_employee());
-        $data['employee'] = $employee_info->first_name . ' ' . mb_substr($employee_info->last_name, 0, 1);
-        $this->_load_customer_data($this->sale_lib->get_customer(), $data);
-
-        $data['sale_id_num'] = $sale_id;
-        $data['sale_id'] = 'POS ' . $sale_id;
-        $data['comments'] = $sale_info['comment'];
-        $data['invoice_number'] = $sale_info['invoice_number'];
-        $data['quote_number'] = $sale_info['quote_number'];
-        $data['sale_status'] = $sale_info['sale_status'];
-
-        $data['company_info'] = implode("\n", [$this->config['address'], $this->config['phone']]);    // TODO: Duplicated code.
-
-        if ($this->config['account_number']) {
-            $data['company_info'] .= "\n" . lang('Sales.account_number') . ": " . $this->config['account_number'];
-        }
-        if ($this->config['tax_id'] != '') {
-            $tax_id_label = lang('Sales.tax_id');
-            if ($this->config['col_electronic_invoice_enable']){
-                $tax_id_label = $this->tax_lib->get_tax_id_type_label($this->config['tax_id_type']);
-            }
-            $data['company_info'] .= "\n" . $tax_id_label .": " . $this->config['tax_id'];
-        }
-
-        $data['barcode'] = $this->barcode_lib->generate_receipt_barcode($data['sale_id']);
-        $data['print_after_sale'] = false;
-        $data['price_work_orders'] = false;
-
-        if ($this->sale_lib->get_mode() == 'sale_invoice') {    // TODO: Duplicated code.
-            $data['mode_label'] = lang('Sales.invoice');
-            $data['customer_required'] = lang('Sales.customer_required');
-        } elseif ($this->sale_lib->get_mode() == 'sale_quote') {
-            $data['mode_label'] = lang('Sales.quote');
-            $data['customer_required'] = lang('Sales.customer_required');
-        } elseif ($this->sale_lib->get_mode() == 'sale_work_order') {
-            $data['mode_label'] = lang('Sales.work_order');
-            $data['customer_required'] = lang('Sales.customer_required');
-        } elseif ($this->sale_lib->get_mode() == 'return') {
-            $data['mode_label'] = lang('Sales.return');
-            $data['customer_required'] = lang('Sales.customer_optional');
-        } else {
-            $data['mode_label'] = lang('Sales.receipt');
-            $data['customer_required'] = lang('Sales.customer_optional');
-        }
-
-        $invoice_type = $this->config['invoice_type'];
-        $data['invoice_view'] = $invoice_type;
-
-        return $data;
+    /**
+     * @param int $sale_id
+     * @return array
+     */
+    public function get_invoice_data(int $sale_id): array
+    {
+        return $this->_load_sale_data($sale_id);
     }
 
     /**
