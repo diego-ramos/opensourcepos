@@ -52,8 +52,8 @@ class CreateInvoicesDianQueue extends Migration
             ],
             'dian_status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['accepted', 'rejected'],
-                'default'    => 'accepted',
+                'constraint' => ['pending', 'accepted', 'rejected'],
+                'default'    => 'pending',
             ],
             'error_message' => [
                 'type'       => 'TEXT',

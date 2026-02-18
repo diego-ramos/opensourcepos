@@ -15,6 +15,7 @@ class AddColElectronicInvoiceEnableToAppConfig extends Migration
             ['key' => 'col_electronic_software_id', 'value' => '0'],
             ['key' => 'col_electronic_pin', 'value' => '0'],
             ['key' => 'col_electronic_invoice_wsdl', 'value' => ''],
+            ['key' => 'col_electronic_invoice_endpoint', 'value' => ''],
             ['key' => 'col_electronic_invoice_cert_password', 'value' => ''],
             ['key' => 'col_electronic_invoice_cert_key_path', 'value' => ''], 
             ['key' => 'col_electronic_invoice_cert_crt_path', 'value' => ''], 
@@ -22,7 +23,8 @@ class AddColElectronicInvoiceEnableToAppConfig extends Migration
             ['key' => 'col_electronic_range_min', 'value' => '0'],
             ['key' => 'col_electronic_range_max', 'value' => '0'],
             ['key' => 'col_electronic_prefix', 'value' => ''],
-            ['key' => 'col_electronic_tech_id', 'value' => '']
+            ['key' => 'col_electronic_tech_id', 'value' => ''],
+            ['key' => 'col_electronic_test', 'value' => '0'],
         ]);
     }
 
@@ -34,6 +36,7 @@ class AddColElectronicInvoiceEnableToAppConfig extends Migration
             'col_electronic_software_id',
             'col_electronic_pin',
             'col_electronic_invoice_wsdl',
+            'col_electronic_invoice_endpoint',
             'col_electronic_invoice_cert_password',
             'col_electronic_invoice_cert_key_path',
             'col_electronic_invoice_cert_crt_path',
@@ -41,7 +44,8 @@ class AddColElectronicInvoiceEnableToAppConfig extends Migration
             'col_electronic_range_min',
             'col_electronic_range_max',
             'col_electronic_prefix',
-            'col_electronic_tech_id'
+            'col_electronic_tech_id',
+            'col_electronic_test'
         ];
 
         $this->db->table('ospos_app_config')

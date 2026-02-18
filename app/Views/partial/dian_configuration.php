@@ -54,6 +54,19 @@
     </div>
 </div>
 <div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_invoice_endpoint'), 'col_electronic_invoice_endpoint', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'url',
+            'name'  => 'col_electronic_invoice_endpoint',
+            'id'    => 'col_electronic_invoice_endpoint',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_invoice_endpoint'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_invoice_cert_key_path'), 'col_electronic_invoice_cert_key_path', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
@@ -61,7 +74,6 @@
             'id'    => 'col_electronic_invoice_cert_key_path',
             'class' => 'form-control input-sm',
             'value' => $config['col_electronic_invoice_cert_key_path'] ?? '',
-            'required' => true
         ]) ?>
     </div>
 </div>
@@ -125,6 +137,30 @@
             'id'    => 'col_electronic_prefix',
             'class' => 'form-control input-sm',
             'value' => $config['col_electronic_prefix'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_test'), 'col_electronic_test', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_checkbox([
+            'name'    => 'col_electronic_test',
+            'value'   => 'col_electronic_test',
+            'id'      => 'col_electronic_test',
+            'checked' => $config['col_electronic_test'] == 1
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_test_set_id'), 'col_electronic_test_set_id', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'text',
+            'name'  => 'col_electronic_test_set_id',
+            'id'    => 'col_electronic_test_set_id',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_test_set_id'] ?? '',
             'required' => true
         ]) ?>
     </div>

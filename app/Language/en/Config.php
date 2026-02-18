@@ -50,6 +50,7 @@ return [
     "col_electronic_software_id"                => "Colombia Electronic Software ID",
     "col_electronic_software_pin"               => "Colombia Electronic Software PIN",
     "col_electronic_invoice_wsdl"               => "Colombia Electronic Invoice WSDL",
+    "col_electronic_invoice_endpoint"           => "Colombia Electronic Invoice End Point (Curl)",
     "col_electronic_invoice_cert_path"          => "Colombia Electronic Invoice Certificate Path",
     "col_electronic_invoice_cert_password"      => "Colombia Electronic Invoice Certificate Password",
     "comma"                                     => "comma",
