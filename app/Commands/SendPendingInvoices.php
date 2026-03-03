@@ -4,14 +4,16 @@ namespace App\Commands;
 
 require_once ROOTPATH . 'vendor/autoload.php';
 
-use DOMDocument;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use App\Libraries\DianResponseProcessor;
+use App\Libraries\Tax_lib;
 use App\Models\InvoiceDianQueue;
-use App\Models\Sale;
 use Config\OSPOS;
 use DianFE\DianFE;
+use DateTime;
+use DateTimeZone;
+use App\Events\Load_config;
 
 class SendPendingInvoices extends BaseCommand
 {
@@ -21,6 +23,9 @@ class SendPendingInvoices extends BaseCommand
 
     public function run(array $params)
     {
+        $CIconfig = new Load_config();
+        $CIconfig->load_config();
+
         $config = config(OSPOS::class)->settings;
         $queue = new InvoiceDianQueue();
         $pending = $queue->where('status', 'pending')->findAll();
@@ -58,7 +63,7 @@ class SendPendingInvoices extends BaseCommand
                 $lineItems = [];
                 foreach ($data['cart'] as $item) {
                     $qty = (float) $item['quantity'];
-                    $unit = (float) $item['price'];
+                   
                     $lineExtension = (float) $item['total']; // total without tax if tax_included is false, or total with tax?
                     // OSPOS item['total'] usually includes discount but check if it includes tax.
                     // In _load_sale_data, it uses get_totals which computes subtotals.
@@ -73,6 +78,7 @@ class SendPendingInvoices extends BaseCommand
                             if ($tax['line'] == $item['line']) {
                                 $taxPercent = (float) $tax['percent'];
                                 $taxAmount += (float) $tax['item_tax_amount'];
+                                $unit = (float) $item['price'] - $taxAmount;
                             }
                         }
                     }
@@ -83,13 +89,12 @@ class SendPendingInvoices extends BaseCommand
                         'quantity'        => $qty,
                         'unit_measure'    => 'NIU', // Unidad de medida estándar
                         'unit_price'      => number_format($unit, 2, '.', ''),
-                        'line_extension'  => number_format($lineExtension, 2, '.', ''),
                         'discount'        => number_format((float) $item['discount'], 2, '.', ''),
                         'discount_type'   => $item['discount_type'] == 0 ? 'percentage' : 'fixed',
                         'tax_percent'     => number_format($taxPercent, 2, '.', ''),
                         'tax_category'    => '01', // IVA
                         'tax_exempt'      => $taxPercent == 0,
-                        'total'  => number_format($lineExtension + $taxAmount, 2, '.', '')
+                        'line_extension'  => number_format($lineExtension - $taxAmount, 2, '.', '')
                     ];
                 }
 
@@ -102,12 +107,18 @@ class SendPendingInvoices extends BaseCommand
                 $pin = $config['col_electronic_pin'];
                 $softwareSecurityCode = hash('sha384', $softwareID . $pin . $data['invoice_number']);
 
+                $tax_lib = new Tax_lib();
+
+                $issueDate = DateTime::createFromFormat('m/d/Y', substr($data['transaction_time'], 0, 10));
+                $date = new DateTime($data['transaction_time'], new DateTimeZone('America/Bogota'));
+                $issueTime = $date->format('H:i:sP');
+
                 $invoiceData = [
                     'invoice_env' => $config['col_electronic_test'] ? 'development' :'production',
                     'invoice_number' => $data['invoice_number'],
                     'resolution_prefix' =>  $config['col_electronic_prefix'],
-                    'issue_date' => substr($data['transaction_time'], 0, 10),
-                    'issue_time' => substr($data['transaction_time'], 11, 8) . '-05:00', // Added timezone for CUFE
+                    'issue_date' =>  $issueDate->format('Y-m-d'),
+                    'issue_time' => $issueTime,
                     'technical_key' => $technicalKey,
                     'software_security_code' => $softwareSecurityCode,
                     'software_id' => $softwareID,
@@ -119,7 +130,7 @@ class SendPendingInvoices extends BaseCommand
                         'name' => $config['company'],
                         'tax_id' => $config['tax_id'], 
                         'tax_id_dv' => $config['tax_id_dv'] ?? '0',
-                        'document_type' => $config['tax_id_type'] ?? '31',
+                        'document_type' =>  $tax_lib->get_tax_id_type_code($config['tax_id_type']) ?? '31',
                         'address' => $config['address'],
                         'city' => $config['city'] ?? 'Bogotá',
                         'department' => $config['state'] ?? 'Cundinamarca'
@@ -127,7 +138,7 @@ class SendPendingInvoices extends BaseCommand
                     'customer' => [
                         'name' => $data['customer_name'] ?: 'Consumidor Final',
                         'tax_id' => $data['customer_tax_id'] ?? '222222222',
-                        'document_type' => $data['customer_tax_id_type'] ?? '13',
+                        'document_type' => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
                         'address' => $data['customer_address'] ?? 'Sin dirección',
                         'city' => $data['customer_city'] ?? 'Bogotá',
                         'department' => $data['customer_state'] ?? 'Cundinamarca'
@@ -153,14 +164,17 @@ class SendPendingInvoices extends BaseCommand
                     // Process response to update database
                     // We need the raw XML response for processSoapResponse
                     if (isset($result['response'])) {
-                     //   DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
+                        DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
                     } else {
                         // Fallback if we have success but no raw response (unlikely with DianClient)
-                      //  DianResponseProcessor::processError($entry['id'], "Success without raw response");
+                        DianResponseProcessor::processError($entry['id'], "Success without raw response");
                     }
 
                 } else {
                     $errorMsg = $result['error'] ?? $result['message'] ?? 'Unknown error';
+                    if (isset($result['response'])) {
+                        $errorMsg .= "\nRAW RESPONSE:\n" . $result['response'];
+                    }
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
                    // DianResponseProcessor::processError($entry['id'], $errorMsg);
                 }
