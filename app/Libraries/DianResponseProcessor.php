@@ -36,6 +36,15 @@ class DianResponseProcessor
         $statusCodeNode = $xpath->query('//appresp:Response/appresp:ResponseCode')->item(0);
         $descriptionNode = $xpath->query('//appresp:Response/appresp:Description')->item(0);
 
+        // Fallback para SendBillSyncResponse
+        $xpath->registerNamespace('b', 'http://schemas.datacontract.org/2004/07/DianResponse');
+        if (!$statusCodeNode) {
+            $statusCodeNode = $xpath->query('//b:StatusCode')->item(0);
+        }
+        if (!$descriptionNode) {
+            $descriptionNode = $xpath->query('//b:StatusDescription')->item(0);
+        }
+
         $responseCode = $statusCodeNode ? $statusCodeNode->textContent : null;
         $responseDescription = $descriptionNode ? $descriptionNode->textContent : null;
 
@@ -44,15 +53,36 @@ class DianResponseProcessor
         $applicationResponse = $appResponseNode ? $appResponseNode->textContent : null;
 
         // Determinar estado DIAN
-        $dianStatus = (stripos($responseDescription, 'aceptado') !== false) ? 'accepted' : 'rejected';
+        $dianStatus = (stripos($responseDescription ?: '', 'aceptado') !== false || stripos($responseDescription ?: '', 'procesado') !== false) ? 'accepted' : 'rejected';
+
+        $errorMessage = null;
+        if ($dianStatus !== 'accepted') {
+            $xpath->registerNamespace('c', 'http://schemas.microsoft.com/2003/10/Serialization/Arrays');
+            $errorNodes = $xpath->query('//b:ErrorMessage/c:string');
+            if ($errorNodes && $errorNodes->length > 0) {
+                $errors = [];
+                foreach ($errorNodes as $node) {
+                    $errors[] = $node->nodeValue;
+                }
+                $errorMessage = implode(' | ', $errors);
+            }
+            
+            if (!$errorMessage) {
+                $statusMsgNode = $xpath->query('//b:StatusMessage')->item(0);
+                if ($statusMsgNode) {
+                    $errorMessage = $statusMsgNode->nodeValue;
+                }
+            }
+        }
 
         $dataToUpdate = [
-            'status'                     => 'sent',
+            'status'                     => $dianStatus === 'accepted' ? 'sent' : 'error',
             'dian_cufe'                 => $cufe,
             'dian_response_code'        => $responseCode,
             'dian_response_description' => $responseDescription,
             'dian_application_response' => $applicationResponse,
             'dian_status'               => $dianStatus,
+            'error_message'             => $errorMessage,
             'dian_sent_at'              => date('Y-m-d H:i:s'),
             'updated_at'                => date('Y-m-d H:i:s')
         ];
