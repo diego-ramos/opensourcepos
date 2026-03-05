@@ -45,7 +45,15 @@ class SendPendingInvoices extends BaseCommand
             'cert_password' => $config['col_electronic_invoice_cert_password'] ?? '', 
             'wsdl' => $config['col_electronic_invoice_wsdl'],
             'end_point' => $config['col_electronic_invoice_endpoint'],
-            'env' => $config['col_electronic_test'] ? 'development' :'production'
+            'env' => $config['col_electronic_test'] ? 'development' :'production',
+            'resolution' => [
+                'authorization_number' => $config['col_electronic_range_resolution'],
+                'start_date' => $config['col_electronic_range_start_date'],
+                'end_date' => $config['col_electronic_range_end_date'],
+                'from' => $config['col_electronic_range_min'],
+                'to' => $config['col_electronic_range_max'],
+                'prefix' => $config['col_electronic_prefix']
+            ]
         ];
         
         foreach ($pending as $entry) {
@@ -84,17 +92,19 @@ class SendPendingInvoices extends BaseCommand
                     }
 
                     $lineItems[] = [
-                        'line_number'     => $item['line'],
-                        'description'     => $item['description'] ?: $item['name'],
-                        'quantity'        => $qty,
-                        'unit_measure'    => 'NIU', // Unidad de medida estándar
-                        'unit_price'      => number_format($unit, 2, '.', ''),
-                        'discount'        => number_format((float) $item['discount'], 2, '.', ''),
-                        'discount_type'   => $item['discount_type'] == 0 ? 'percentage' : 'fixed',
-                        'tax_percent'     => number_format($taxPercent, 2, '.', ''),
-                        'tax_category'    => '01', // IVA
-                        'tax_exempt'      => $taxPercent == 0,
-                        'line_extension'  => number_format($lineExtension - $taxAmount, 2, '.', '')
+                        'line_number'    => $item['line'],
+                        'description'   => $item['description'] ?: $item['name'],
+                        'item_code'     => $item['item_id'] ?? '01',
+                        'quantity'      => $qty,
+                        'unit_code'     => 'NIU',
+                        'unit_price'    => number_format($unit, 2, '.', ''),
+                        'discount'      => number_format((float) $item['discount'], 2, '.', ''),
+                        'discount_type' => $item['discount_type'] == 0 ? 'percentage' : 'fixed',
+                        'tax_percent'   => number_format($taxPercent, 2, '.', ''),
+                        'tax_amount'    => number_format($taxAmount, 2, '.', ''),
+                        'tax_scheme'    => ['id' => '01', 'name' => 'IVA'],
+                        'tax_exempt'    => $taxPercent == 0,
+                        'line_extension'=> number_format($lineExtension - $taxAmount, 2, '.', '')
                     ];
                 }
 
@@ -115,7 +125,7 @@ class SendPendingInvoices extends BaseCommand
 
                 $invoiceData = [
                     'invoice_env' => $config['col_electronic_test'] ? 'development' :'production',
-                    'invoice_number' => $data['invoice_number'],
+                    'invoice_number' => $config['col_electronic_prefix'].$data['invoice_number'],
                     'resolution_prefix' =>  $config['col_electronic_prefix'],
                     'issue_date' =>  $issueDate->format('Y-m-d'),
                     'issue_time' => $issueTime,
@@ -124,30 +134,59 @@ class SendPendingInvoices extends BaseCommand
                     'software_id' => $softwareID,
                     'software_pin' => $pin,
                     'test_set_id' => $config['col_electronic_test'] ? $config['col_electronic_test_set_id'] : '',
-                    'emitter_document_number' => $config['tax_id'],
-                    'customer_document_number' => $data['customer_tax_id'] ?? '222222222',
+                    'emitter_document_number' => substr($config['tax_id'], 0, -2),
+                    'customer_document_number' => $data['customer_tax_id'] ?? '222222222222',
                     'supplier' => [
-                        'name' => $config['company'],
-                        'tax_id' => $config['tax_id'], 
-                        'tax_id_dv' => $config['tax_id_dv'] ?? '0',
-                        'document_type' =>  $tax_lib->get_tax_id_type_code($config['tax_id_type']) ?? '31',
-                        'address' => $config['address'],
-                        'city' => $config['city'] ?? 'Bogotá',
-                        'department' => $config['state'] ?? 'Cundinamarca'
+                        'name'                  => $config['company'],
+                        'tax_id'                => substr($config['tax_id'], 0, -2),
+                        'tax_id_dv'             => substr($config['tax_id'], -1),
+                        'document_type'         => $tax_lib->get_tax_id_type_code($config['tax_id_type']) ?? '31',
+                        'additional_account_id' => '2',
+                        'industry_code'         => $config['col_ciiu_code'] ?? '',
+                        'tax_level_code'        => $config['col_tax_level_code'] ?? 'R-99-PN',
+                        'tax_scheme_id'         => '01',
+                        'tax_scheme_name'       => 'IVA',
+                        'phone'                 => $config['phone'] ?? '',
+                        'email'                 => $config['email'] ?? '',
+                        'address'               => [
+                            'id'                   => $config['col_city_code'] ?? '05615',
+                            'city_name'            => $config['city'] ?? 'Rionegro',
+                            'postal_zone'          => $config['col_postal_zone'] ?? '',
+                            'country_subentity'    => $config['state'] ?? 'Antioquia',
+                            'country_subentity_code'=> $config['col_state_code'] ?? '05',
+                            'address_line'         => $config['address'] ?? '',
+                            'country_code'         => 'CO',
+                            'country_name'         => 'Colombia',
+                        ],
                     ],
                     'customer' => [
-                        'name' => $data['customer_name'] ?: 'Consumidor Final',
-                        'tax_id' => $data['customer_tax_id'] ?? '222222222',
-                        'document_type' => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
-                        'address' => $data['customer_address'] ?? 'Sin dirección',
-                        'city' => $data['customer_city'] ?? 'Bogotá',
-                        'department' => $data['customer_state'] ?? 'Cundinamarca'
+                        'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
+                        'tax_id'                => $data['customer_tax_id'] ?? '222222222222',
+                        'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
+                        'additional_account_id' => '1',
+                        'tax_level_code'        => 'R-99-PN',
+                        'tax_scheme_id'         => 'ZZ',
+                        'tax_scheme_name'       => 'No aplica',
+                        'phone'                 => $data['customer_phone'] ?? '0000000',
+                        'email'                 => $data['customer_email'] ?? $config['email'] ?? '',
+                        'address'               => [
+                            'id'                   => $data['customer_city_code'] ?? $config['col_city_code'] ?? '05615',
+                            'city_name'            => $data['customer_city'] ?? $config['city'] ?? 'Rionegro',
+                            'postal_zone'          => $data['customer_postal_zone'] ?? $config['col_postal_zone'] ?? '',
+                            'country_subentity'    => $data['customer_state'] ?? $config['state'] ?? 'Antioquia',
+                            'country_subentity_code'=> $data['customer_state_code'] ?? $config['col_state_code'] ?? '05',
+                            'address_line'         => $data['customer_address'] ?? $config['address'] ?? '',
+                            'country_code'         => 'CO',
+                            'country_name'         => 'Colombia',
+                        ],
                     ],
                     'tax_total' => number_format($taxTotal, 2, '.', ''),
                     'subtotal' => number_format($subtotal, 2, '.', ''),
                     'invoice_total' => number_format($invoiceTotal, 2, '.', ''),
                     'items' => $lineItems
                 ];
+
+                $invoiceData['resolution'] = $dianConfig['resolution'];
 
                 // Initialize DianFE facade
                 $dianfe = new DianFE($dianConfig);

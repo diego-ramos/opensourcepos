@@ -800,6 +800,9 @@ class Config extends Secure_Controller
             $dian_config['col_electronic_invoice_cert_crt_path'] = $this->request->getPost('col_electronic_invoice_cert_crt_path') ?? '';
             $dian_config['col_electronic_range_min'] = $this->request->getPost('col_electronic_range_min') ?? '';
             $dian_config['col_electronic_range_max'] = $this->request->getPost('col_electronic_range_max') ?? '';
+            $dian_config['col_electronic_range_resolution'] = $this->request->getPost('col_electronic_range_resolution') ?? '';
+            $dian_config['col_electronic_range_start_date'] = $this->request->getPost('col_electronic_range_start_date') ?? '';
+            $dian_config['col_electronic_range_end_date'] = $this->request->getPost('col_electronic_range_end_date') ?? '';
             $dian_config['col_electronic_prefix'] = $this->request->getPost('col_electronic_prefix') ?? '';
             $dian_config['col_electronic_tech_id'] = $this->request->getPost('col_electronic_tech_id') ?? '';
             $dian_config['col_electronic_test'] = $this->request->getPost('col_electronic_test') != null;

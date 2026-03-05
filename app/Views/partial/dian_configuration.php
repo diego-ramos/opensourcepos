@@ -129,6 +129,45 @@
     </div>
 </div>
 <div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_range_resolution'), 'col_electronic_range_resolution', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'text',
+            'name'  => 'col_electronic_range_resolution',
+            'id'    => 'col_electronic_range_resolution',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_range_resolution'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_range_start_date'), 'col_electronic_range_start_date', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'date',
+            'name'  => 'col_electronic_range_start_date',
+            'id'    => 'col_electronic_range_start_date',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_range_start_date'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_range_end_date'), 'col_electronic_range_end_date', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'date',
+            'name'  => 'col_electronic_range_end_date',
+            'id'    => 'col_electronic_range_end_date',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_range_end_date'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_prefix'), 'col_electronic_prefix', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
