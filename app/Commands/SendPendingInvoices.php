@@ -119,15 +119,17 @@ class SendPendingInvoices extends BaseCommand
 
                 $tax_lib = new Tax_lib();
 
-                $issueDate = DateTime::createFromFormat('m/d/Y', substr($data['transaction_time'], 0, 10));
-                $date = new DateTime($data['transaction_time'], new DateTimeZone('America/Bogota'));
-                $issueTime = $date->format('H:i:sP');
+                $now = new DateTime('now', new DateTimeZone('America/Bogota'));
+
+                $issueDate = $now->format('Y-m-d');
+                $issueTime = $now->format('H:i:s-05:00');
+                $signingTimeValue = $now->format('Y-m-d\TH:i:s-05:00');
 
                 $invoiceData = [
                     'invoice_env' => $config['col_electronic_test'] ? 'development' :'production',
                     'invoice_number' => $config['col_electronic_prefix'].$data['invoice_number'],
                     'resolution_prefix' =>  $config['col_electronic_prefix'],
-                    'issue_date' =>  $issueDate->format('Y-m-d'),
+                    'issue_date' =>  $issueDate,
                     'issue_time' => $issueTime,
                     'technical_key' => $technicalKey,
                     'software_security_code' => $softwareSecurityCode,
@@ -183,7 +185,8 @@ class SendPendingInvoices extends BaseCommand
                     'tax_total' => number_format($taxTotal, 2, '.', ''),
                     'subtotal' => number_format($subtotal, 2, '.', ''),
                     'invoice_total' => number_format($invoiceTotal, 2, '.', ''),
-                    'items' => $lineItems
+                    'items' => $lineItems,
+                    'signing_time' => $signingTimeValue,
                 ];
 
                 $invoiceData['resolution'] = $dianConfig['resolution'];
