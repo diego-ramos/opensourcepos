@@ -197,35 +197,15 @@ class SendPendingInvoices extends BaseCommand
                 CLI::write("🚀 Enviando a la DIAN...");
                 $result = $dianfe->sendInvoice($invoiceData);
                 
-                if (is_array($result) && isset($result['success']) && $result['success']) {
-                    CLI::write("✅ Factura aceptada por la DIAN.", "green");
-                    if (isset($result['status_description'])) {
-                        CLI::write("💬 Detalle: " . $result['status_description']);
-                    }
-                    
-                    /*if (isset($result['response'])) {
-                        CLI::write("RAW RESPONSE:\n" . $result['response'], "yellow");
-                    }*/
-                    
-                    // Process response to update database
-                    // We need the raw XML response for processSoapResponse
-                    if (isset($result['response'])) {
-                        DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
-                    } else {
-                        // Fallback if we have success but no raw response (unlikely with DianClient)
-                        DianResponseProcessor::processError($entry['id'], "Success without raw response");
-                    }
-
+                if (is_array($result) && isset($result['response'])) {
+                    CLI::write("✅ Factura enviada a la DIAN.", "green");
+                    DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
                 } else {
-                    $errorMsg = $result['error'] ?? $result['message'] ?? 'Unknown error';
-                    /*if (isset($result['response'])) {
-                        $errorMsg .= "\nRAW RESPONSE:\n" . $result['response'];
-                    }*/
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
-                   // DianResponseProcessor::processError($entry['id'], $errorMsg);
+                    DianResponseProcessor::processError($entry['id'], "Error al enviar la factura a la DIAN");
                 }
             } catch (\Throwable $e) {
-               // DianResponseProcessor::processError($entry['id'], $e->getMessage());
+               DianResponseProcessor::processError($entry['id'], $e->getMessage());
                 CLI::error("❌ Error en sale_id {$entry['sale_id']}: {$e->getMessage()}");
             }
         }
