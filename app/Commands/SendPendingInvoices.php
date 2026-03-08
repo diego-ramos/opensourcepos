@@ -28,7 +28,7 @@ class SendPendingInvoices extends BaseCommand
 
         $config = config(OSPOS::class)->settings;
         $queue = new InvoiceDianQueue();
-        $pending = $queue->where('status', 'pending')->findAll();
+        $pending = $queue->where('sale_id', 61)->findAll();
 
         if (empty($pending)) {
             CLI::write('✅ No pending invoices to process.', 'green');
@@ -172,12 +172,12 @@ class SendPendingInvoices extends BaseCommand
                         'phone'                 => $data['customer_phone'] ?? '0000000',
                         'email'                 => $data['customer_email'] ?? $config['email'] ?? '',
                         'address'               => [
-                            'id'                   => $data['customer_city_code'] ?? $config['col_city_code'] ?? '05615',
-                            'city_name'            => $data['customer_city'] ?? $config['city'] ?? 'Rionegro',
-                            'postal_zone'          => $data['customer_postal_zone'] ?? $config['col_postal_zone'] ?? '',
-                            'country_subentity'    => $data['customer_state'] ?? $config['state'] ?? 'Antioquia',
-                            'country_subentity_code'=> $data['customer_state_code'] ?? $config['col_state_code'] ?? '05',
-                            'address_line'         => $data['customer_address'] ?? $config['address'] ?? '',
+                            'id'                   => !empty($data['customer_city_code']) ? $data['customer_city_code'] : (!empty($config['col_city_code']) ? $config['col_city_code'] : '05615'),
+                            'city_name'            => !empty($data['customer_city']) ? $data['customer_city'] : (!empty($config['city']) ? $config['city'] : 'Rionegro'),
+                            'postal_zone'          => !empty($data['customer_postal_zone']) ? $data['customer_postal_zone'] : (!empty($config['col_postal_zone']) ? $config['col_postal_zone'] : ''),
+                            'country_subentity'    => !empty($data['customer_state']) ? $data['customer_state'] : (!empty($config['state']) ? $config['state'] : 'Antioquia'),
+                            'country_subentity_code'=> !empty($data['customer_state_code']) ? $data['customer_state_code'] : (!empty($config['col_state_code']) ? $config['col_state_code'] : '05'),
+                            'address_line'         => !empty($data['customer_address']) ? $data['customer_address'] : (!empty($config['address']) ? $config['address'] : ''),
                             'country_code'         => 'CO',
                             'country_name'         => 'Colombia',
                         ],
@@ -203,6 +203,10 @@ class SendPendingInvoices extends BaseCommand
                         CLI::write("💬 Detalle: " . $result['status_description']);
                     }
                     
+                    /*if (isset($result['response'])) {
+                        CLI::write("RAW RESPONSE:\n" . $result['response'], "yellow");
+                    }*/
+                    
                     // Process response to update database
                     // We need the raw XML response for processSoapResponse
                     if (isset($result['response'])) {
@@ -214,9 +218,9 @@ class SendPendingInvoices extends BaseCommand
 
                 } else {
                     $errorMsg = $result['error'] ?? $result['message'] ?? 'Unknown error';
-                    if (isset($result['response'])) {
+                    /*if (isset($result['response'])) {
                         $errorMsg .= "\nRAW RESPONSE:\n" . $result['response'];
-                    }
+                    }*/
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
                    // DianResponseProcessor::processError($entry['id'], $errorMsg);
                 }
