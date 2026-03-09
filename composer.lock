@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9f9b45551dd783a0b9b06c713fb5d29",
+    "content-hash": "605e980274a8b8276223398247783dd8",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -311,10 +311,16 @@
         {
             "name": "diego-ramos/dian-facturacion",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "c:/Users/diego/Documents/Open_POS/dian-facturacion-php",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:diego-ramos/dian-facturacion-php.git",
                 "reference": "c9293bcd0a60d5e087d3c08b5dcac464376b61ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/diego-ramos/dian-facturacion-php/zipball/c9293bcd0a60d5e087d3c08b5dcac464376b61ab",
+                "reference": "c9293bcd0a60d5e087d3c08b5dcac464376b61ab",
+                "shasum": ""
             },
             "require": {
                 "ext-openssl": "*",
@@ -322,6 +328,7 @@
                 "php": ">=7.4",
                 "robrichards/xmlseclibs": "^3.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -332,10 +339,11 @@
                 "Apache-2.0"
             ],
             "description": "Módulo PHP para enviar facturas electrónicas a la DIAN (Colombia) usando software propio",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "source": "https://github.com/diego-ramos/dian-facturacion-php/tree/main",
+                "issues": "https://github.com/diego-ramos/dian-facturacion-php/issues"
+            },
+            "time": "2026-03-09T00:36:10+00:00"
         },
         {
             "name": "dompdf/dompdf",
@@ -4905,16 +4913,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v7.4.6",
+            "version": "v7.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "6d643a93b47398599124022eb24d97c153c12f27"
+                "reference": "e1e6770440fb9c9b0cf725f81d1361ad1835329d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/6d643a93b47398599124022eb24d97c153c12f27",
-                "reference": "6d643a93b47398599124022eb24d97c153c12f27",
+                "url": "https://api.github.com/repos/symfony/console/zipball/e1e6770440fb9c9b0cf725f81d1361ad1835329d",
+                "reference": "e1e6770440fb9c9b0cf725f81d1361ad1835329d",
                 "shasum": ""
             },
             "require": {
@@ -4979,7 +4987,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.4.6"
+                "source": "https://github.com/symfony/console/tree/v7.4.7"
             },
             "funding": [
                 {
@@ -4999,7 +5007,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-25T17:02:47+00:00"
+            "time": "2026-03-06T14:06:20+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
