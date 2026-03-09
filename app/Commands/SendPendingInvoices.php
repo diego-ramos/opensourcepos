@@ -198,11 +198,19 @@ class SendPendingInvoices extends BaseCommand
                 $result = $dianfe->sendInvoice($invoiceData);
                 
                 if (is_array($result) && isset($result['response'])) {
-                    CLI::write("✅ Factura enviada a la DIAN.", "green");
+                    CLI::write("Raw Response: " . $result['response']);
+                    if (isset($result['status_description'])) {
+                        $color = ($result['success'] ?? false) ? 'green' : 'red';
+                        $prefix = ($result['success'] ?? false) ? '✅' : '❌';
+                        CLI::write("$prefix DIAN Status: [{$result['status_code']}] {$result['status_description']}", $color);
+                    } else {
+                        CLI::write("✅ Factura enviada a la DIAN.", "green");
+                    }
                     DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
                 } else {
+                    $errorMsg = $result['error'] ?? 'Error desconocido';
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
-                    DianResponseProcessor::processError($entry['id'], "Error al enviar la factura a la DIAN");
+                    DianResponseProcessor::processError($entry['id'], $errorMsg);
                 }
             } catch (\Throwable $e) {
                DianResponseProcessor::processError($entry['id'], $e->getMessage());
