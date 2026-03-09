@@ -16,6 +16,9 @@
  * @var string $barcode
  * @var int $sale_id
  * @var array $config
+ * @var string $qr_code
+ * @var string $qr_code_url
+ * @var string $cufe
  */
 ?>
 
@@ -176,10 +179,11 @@
                     <span><?= nl2br($config['payment_message']) ?></span>
                     <span><?= lang('Sales.comments') . ': ' . (empty($comments) ? $config['invoice_default_comments'] : $comments) ?></span>
                 </h5>
-                <?= nl2br(esc($config['return_policy'])) ?>
+                <?= nl2br((string) esc($config['return_policy'])) ?>
             </div>
             <div id="barcode">
-                <img alt=<?= '$sale_id' ?> src="data:image/svg+xml;base64,<?= base64_encode($barcode) ?>"><br>
+                <p> CUFE: <?= $cufe ?></p>
+                <img src="<?= $qr_code ?>" alt="QR Code" style="width: 200px; height: 200px;" /><br>
                 <?= $sale_id ?>
             </div>
         </div>

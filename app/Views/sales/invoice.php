@@ -17,6 +17,9 @@
  * @var string $barcode
  * @var int $sale_id
  * @var array $config
+ * @var string $qr_code
+ * @var string $qr_code_url
+ * @var string $cufe
  */
 ?>
 
@@ -217,19 +220,20 @@ if (isset($error_message)) {
                 <td class="total-value" id="change"><?= to_currency($amount_change) ?></td>
             </tr>
         <?php } ?>
-
+Invoice
     </table>
 
     <div id="terms">
         <div id="sale_return_policy">
             <h5>
-                <span><?= nl2br(esc($config['payment_message'])) ?></span>
+                <span><?= nl2br((string) esc($config['payment_message'])) ?></span>
                 <span style="padding: 4%;"><?= empty($comments) ? esc($config['invoice_default_comments']) : lang('Sales.comments') . ': ' . esc($comments) ?></span>
             </h5>
-            <div style="padding: 2%;"><?= nl2br(esc($config['return_policy'])) ?></div>
+            <div style="padding: 2%;"><?= nl2br((string) esc($config['return_policy'])) ?></div>
         </div>
         <div id="barcode">
-            <?= $barcode ?><br>
+            <p> CUFE: <?= $cufe ?></p>
+            <img src="<?= $qr_code ?>" alt="QR Code" style="width: 200px; height: 200px;" /><br>
             <?= $sale_id ?>
         </div>
     </div>

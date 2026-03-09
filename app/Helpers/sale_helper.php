@@ -9,6 +9,9 @@ use App\Models\Employee;
 use App\Models\Sale;
 use App\Models\Stock_location;
 use Config\OSPOS;
+use Config\Dian;
+use App\Models\InvoiceDianQueue;
+use chillerlan\QRCode\QRCode;
 
 /**
  * Get sale data for invoice/receipt.
@@ -22,6 +25,7 @@ function get_sale_data(int $sale_id): array
     $tax_lib = new Tax_lib();
     $barcode_lib = new Barcode_lib();
     $config = config(OSPOS::class)->settings;
+    $dian_config = config(Dian::class);
     $sale_model = model(Sale::class);
     $employee_model = model(Employee::class);
     $stock_location_model = model(Stock_location::class);
@@ -120,6 +124,24 @@ function get_sale_data(int $sale_id): array
     }
 
     $data['invoice_view'] = $config['invoice_type'];
+
+    $queue = new InvoiceDianQueue();
+    $queue_info = $queue->where('sale_id', $sale_id)->first();
+    $data['cufe'] = $queue_info['dian_cufe'];
+
+    $qr_text =
+    "NumFac=".$sale_id."\n".
+    "FecFac=".$data['transaction_date']."\n".
+    "HorFac=".$data['transaction_time']."\n".
+    "NitFac=".$config['tax_id']."\n".
+    "DocAdq=".$data['customer_tax_id']."\n".
+    "ValFac=".$totals['subtotal']."\n".
+    "ValIva=".$totals['tax_total']."\n".
+    "ValTot=".$totals['total']."\n".
+    "CUFE=".$data['cufe']."\n".
+    "QRCode=".$dian_config->catalog_url."document/searchqr?documentkey=".$data['cufe'];
+
+    $data['qr_code'] = (new QRCode)->render($qr_text);
 
     return $data;
 }

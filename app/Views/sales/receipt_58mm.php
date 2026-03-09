@@ -12,6 +12,9 @@
  * @var float $amount_change
  * @var string $barcode
  * @var array $config
+ * @var string $qr_code
+ * @var string $qr_code_url
+ * @var string $cufe
  */
 ?>
 <div id="receipt_wrapper_58" class="receipt_wrapper_58">
@@ -114,7 +117,14 @@
             
             <div><?= lang('Sales.amount_due') ?>:: <?= to_currency($amount_change); ?></div>
         </div>
+        
+        <div class="totals_58"></div>
 
+        <div id="barcode">
+            <div class="wrap-text"> CUFE: <?= $cufe ?></div>
+            <img src="<?= $qr_code ?>" alt="QR Code" style="width: 200px; height: 200px;" /><br>
+        </div>
+               
         <div class="center footer">
            
         </div>
