@@ -56,6 +56,9 @@ jobs:
             ${{ runner.os }}-${{ matrix.php-version }}-
             ${{ runner.os }}-
 
+      - name: Configure Composer auth
+        run: composer config --global github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
+
       - name: Install dependencies
         run: composer update --ansi --no-interaction
 
