@@ -30,7 +30,6 @@ class DianResponseProcessor
 
         // CUFE
         $cufeNode = $xpath->query('//appresp:DocumentResponse/appresp:DocumentReference/appresp:UUID')->item(0);
-        $cufe = $cufeNode ? $cufeNode->textContent : null;
 
         // Código y descripción
         $statusCodeNode = $xpath->query('//appresp:Response/appresp:ResponseCode')->item(0);
@@ -38,6 +37,9 @@ class DianResponseProcessor
 
         // Fallback para SendBillSyncResponse
         $xpath->registerNamespace('b', 'http://schemas.datacontract.org/2004/07/DianResponse');
+        if (!$cufeNode) {
+            $cufeNode = $xpath->query('//b:XmlDocumentKey')->item(0);
+        }
         if (!$statusCodeNode) {
             $statusCodeNode = $xpath->query('//b:StatusCode')->item(0);
         }
@@ -47,9 +49,13 @@ class DianResponseProcessor
 
         $responseCode = $statusCodeNode ? $statusCodeNode->textContent : null;
         $responseDescription = $descriptionNode ? $descriptionNode->textContent : null;
+        $cufe = $cufeNode ? $cufeNode->textContent : null;
 
         // Respuesta en base64 (ApplicationResponse)
         $appResponseNode = $xpath->query('//appresp:ApplicationResponse')->item(0);
+        if (!$appResponseNode) {
+            $appResponseNode = $xpath->query('//b:XmlBase64Bytes')->item(0);
+        }
         $applicationResponse = $appResponseNode ? $appResponseNode->textContent : null;
 
         // Determinar estado DIAN
@@ -88,12 +94,6 @@ class DianResponseProcessor
         ];
 
         (new InvoiceDianQueue())->update($queueId, $dataToUpdate);
-
-        // Guardar CUFE en tabla sales si aplica
-        if (!empty($cufe)) {
-            $saleModel = new Sale();
-            $saleModel->update($queue['sale_id'], ['cufe' => $cufe]);
-        }
 
         return true;
     }

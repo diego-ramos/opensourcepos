@@ -28,7 +28,7 @@ class SendPendingInvoices extends BaseCommand
 
         $config = config(OSPOS::class)->settings;
         $queue = new InvoiceDianQueue();
-        $pending = $queue->where('sale_id', 61)->findAll();
+        $pending = $queue->where('status', 'pending')->findAll();
 
         if (empty($pending)) {
             CLI::write('✅ No pending invoices to process.', 'green');
@@ -81,7 +81,7 @@ class SendPendingInvoices extends BaseCommand
                     
                     $taxPercent = 0;
                     $taxAmount = 0;
-                    if (isset($data['item_taxes'])) {
+                    if (isset($data['item_taxes']) && sizeof($data['item_taxes']) > 0) {
                         foreach ($data['item_taxes'] as $tax) {
                             if ($tax['line'] == $item['line']) {
                                 $taxPercent = (float) $tax['percent'];
@@ -89,6 +89,10 @@ class SendPendingInvoices extends BaseCommand
                                 $unit = (float) $item['price'] - $taxAmount;
                             }
                         }
+                    }else {
+                        $unit = (float) $item['price'];
+                        $taxPercent = 0;
+                        $taxAmount = 0;
                     }
 
                     $lineItems[] = [
@@ -215,6 +219,7 @@ class SendPendingInvoices extends BaseCommand
             } catch (\Throwable $e) {
                DianResponseProcessor::processError($entry['id'], $e->getMessage());
                 CLI::error("❌ Error en sale_id {$entry['sale_id']}: {$e->getMessage()}");
+                CLI::error("❌ Stac ktrace: {$e->getTraceAsString()}");
             }
         }
 
