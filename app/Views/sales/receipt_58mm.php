@@ -26,7 +26,7 @@
                 </div>
             <?php } ?>
             <strong><?= esc($config['company']) ?></strong><br>
-            <?= nl2br(esc($config['address'])) ?><br>
+            <?= nl2br((string) esc($config['address'])) ?><br>
             <?= esc($config['phone']) ?><br>
             <?= lang('Sales.receipt') ?><br>
             <?= esc($transaction_time) ?><br>
@@ -117,7 +117,7 @@
             
             <div><?= lang('Sales.amount_due') ?>:: <?= to_currency($amount_change); ?></div>
         </div>
-        
+
         <div class="totals_58"></div>
 
         <div id="barcode">
