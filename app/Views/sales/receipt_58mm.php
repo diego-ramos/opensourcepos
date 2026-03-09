@@ -122,7 +122,7 @@
 
         <div id="barcode">
             <div class="wrap-text"> CUFE: <?= $cufe ?></div>
-            <img src="<?= $qr_code ?>" alt="QR Code" style="width: 200px; height: 200px;" /><br>
+            <img src="<?= $qr_code ?>" alt="DIAN QR Code" style="width: 200px; height: 200px;" /><br>
         </div>
                
         <div class="center footer">

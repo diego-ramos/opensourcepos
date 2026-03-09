@@ -37,6 +37,9 @@ jobs:
       - name: Configure Composer auth
         run: composer config --global github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
 
+      - name: Configure Composer auth
+        run: composer config --global github-oauth.github.com ${{ secrets.COMPOSER_TOKEN }}
+        
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 

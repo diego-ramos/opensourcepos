@@ -233,7 +233,7 @@ Invoice
         </div>
         <div id="barcode">
             <p> CUFE: <?= $cufe ?></p>
-            <img src="<?= $qr_code ?>" alt="QR Code" style="width: 200px; height: 200px;" /><br>
+            <img src="<?= $qr_code ?>" alt="DIAN QR Code" style="width: 200px; height: 200px;" /><br>
             <?= $sale_id ?>
         </div>
     </div>
