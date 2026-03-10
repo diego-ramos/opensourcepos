@@ -16,6 +16,8 @@ class InvoiceDianQueue extends Model
         'dian_response_code',
         'dian_response_description',
         'dian_application_response',
+        'xml_generated',
+        'xml_signed',
         'dian_zip_filename',
         'dian_sent_at',
         'dian_status',

@@ -9,7 +9,7 @@ use DOMXPath;
 
 class DianResponseProcessor
 {
-    public static function processSoapResponse(int $queueId, string $soapResponseXml): string
+    public static function processSoapResponse(int $queueId, string $soapResponseXml, string $xmlGenerated = null, string $xmlSigned = null): string
     {
         $queue = (new InvoiceDianQueue())->find($queueId);
 
@@ -87,6 +87,8 @@ class DianResponseProcessor
             'dian_response_code'        => $responseCode,
             'dian_response_description' => $responseDescription,
             'dian_application_response' => $applicationResponse,
+            'xml_generated'             => $xmlGenerated,
+            'xml_signed'                => $xmlSigned,
             'dian_status'               => $dianStatus,
             'error_message'             => $errorMessage,
             'dian_sent_at'              => date('Y-m-d H:i:s'),
@@ -98,7 +100,7 @@ class DianResponseProcessor
         return $dianStatus;
     }
 
-    public static function processError(int $queueId, string $errorMessage): bool
+    public static function processError(int $queueId, string $errorMessage, string $xmlGenerated = null, string $xmlSigned = null): bool
     {
         $queue = (new InvoiceDianQueue())->find($queueId);
 
@@ -110,6 +112,8 @@ class DianResponseProcessor
         $dataToUpdate = [
             'status'        => 'error',
             'error_message' => $errorMessage,
+            'xml_generated' => $xmlGenerated,
+            'xml_signed'    => $xmlSigned,
             'dian_sent_at'  => date('Y-m-d H:i:s'),
             'updated_at'    => date('Y-m-d H:i:s')
         ];

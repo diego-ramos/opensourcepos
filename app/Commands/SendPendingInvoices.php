@@ -207,6 +207,9 @@ class SendPendingInvoices extends BaseCommand
                 CLI::write("🚀 Enviando a la DIAN...");
                 $result = $dianfe->sendInvoice($invoiceData);
                 
+                $xmlGenerated = $result['xml'] ?? null;
+                $xmlSigned = $result['signedXml'] ?? null;
+
                 if (is_array($result) && isset($result['response'])) {
                     //CLI::write("Raw Response: " . $result['response']);
                     if (isset($result['status_description'])) {
@@ -216,7 +219,7 @@ class SendPendingInvoices extends BaseCommand
                     } else {
                         CLI::write("✅ Factura enviada a la DIAN.", "green");
                     }
-                    $dianStatus = DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
+                    $dianStatus = DianResponseProcessor::processSoapResponse($entry['id'], $result['response'], $xmlGenerated, $xmlSigned);
 
                     if ($dianStatus === 'accepted') {
                         $this->sendInvoiceByEmail($data, $result['signedXml']);
@@ -224,10 +227,10 @@ class SendPendingInvoices extends BaseCommand
                 } else {
                     $errorMsg = $result['error'] ?? 'Error desconocido';
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
-                    DianResponseProcessor::processError($entry['id'], $errorMsg);
+                    DianResponseProcessor::processError($entry['id'], $errorMsg, $xmlGenerated, $xmlSigned);
                 }
             } catch (\Throwable $e) {
-               DianResponseProcessor::processError($entry['id'], $e->getMessage());
+               DianResponseProcessor::processError($entry['id'], $e->getMessage(), $xmlGenerated ?? null, $xmlSigned ?? null);
                 CLI::error("❌ Error en sale_id {$entry['sale_id']}: {$e->getMessage()}");
                 CLI::error("❌ Stac ktrace: {$e->getTraceAsString()}");
             }

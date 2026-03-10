@@ -248,7 +248,7 @@ function load_customer_data(int $customer_id, array &$data, bool $stats = false)
     return $customer_info;
 }
 
-function send_pdf(array $sale_data, string $type = 'invoice', string $invoice_xml = null): bool
+function send_pdf(array $sale_data, string $type = 'invoice', ?string $invoice_xml = null): bool
 {
     $config = config(OSPOS::class)->settings;
     $token_lib = new Token_lib();
