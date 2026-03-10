@@ -42,7 +42,7 @@
 		}
 	],
 	"require": {
-		"php": "^8.1",
+		"php": "^8.2",
 		"ext-intl": "*",
 		"chillerlan/php-qrcode": "^5.0",
 		"codeigniter4/framework": "^4.6.3",

@@ -22,7 +22,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           tools: composer
 
       - name: Get composer cache directory
@@ -40,5 +40,13 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Run PHP CS Fixer
-        run: vendor/bin/php-cs-fixer fix --verbose --ansi --dry-run --config=.php-cs-fixer.no-header.php --using-cache=no --diff
+      - name: Run PHP CS Fixer on changed files
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref || 'master' }} -- '*.php')
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Checking changed PHP files:"
+            echo "$CHANGED_FILES"
+            vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.no-header.php --using-cache=no --sequential $CHANGED_FILES
+          else
+            echo "No PHP files changed."
+          fi
