@@ -12,6 +12,12 @@ use Config\OSPOS;
 use Config\Dian;
 use App\Models\InvoiceDianQueue;
 use chillerlan\QRCode\QRCode;
+use App\Models\Tokens\Token_invoice_count;
+use App\Models\Tokens\Token_customer;
+use App\Models\Tokens\Token_invoice_sequence;
+use Config\Services;
+use App\Libraries\Email_lib;
+use App\Libraries\Token_lib;
 
 /**
  * Get sale data for invoice/receipt.
@@ -25,7 +31,6 @@ function get_sale_data(int $sale_id): array
     $tax_lib = new Tax_lib();
     $barcode_lib = new Barcode_lib();
     $config = config(OSPOS::class)->settings;
-    $dian_config = config(Dian::class);
     $sale_model = model(Sale::class);
     $employee_model = model(Employee::class);
     $stock_location_model = model(Stock_location::class);
@@ -65,6 +70,7 @@ function get_sale_data(int $sale_id): array
     $data['non_cash_total'] = $totals['total'];
     $data['cash_amount_due'] = $totals['cash_amount_due'];
     $data['non_cash_amount_due'] = $totals['amount_due'];
+    $data['tax_total'] = $totals['tax_total'];
 
     if ($data['cash_mode'] && ($data['selected_payment_type'] === lang('Sales.cash') || $data['payments_total'] > 0)) {
         $data['total'] = $totals['cash_total'];
@@ -125,8 +131,22 @@ function get_sale_data(int $sale_id): array
 
     $data['invoice_view'] = $config['invoice_type'];
 
+    load_dian_data($sale_id, $data);
+
+    return $data;
+}
+
+function load_dian_data(int $sale_id, array &$data)
+{
+    $config = config(OSPOS::class)->settings;
+    $dian_config = config(Dian::class);
+    
     $queue = new InvoiceDianQueue();
     $queue_info = $queue->where('sale_id', $sale_id)->first();
+    if (!isset($queue_info)) {
+        return;
+    }
+    
     $data['cufe'] = $queue_info['dian_cufe'];
 
     $qr_text =
@@ -135,15 +155,13 @@ function get_sale_data(int $sale_id): array
     "HorFac=".$data['transaction_time']."\n".
     "NitFac=".$config['tax_id']."\n".
     "DocAdq=".$data['customer_tax_id']."\n".
-    "ValFac=".$totals['subtotal']."\n".
-    "ValIva=".$totals['tax_total']."\n".
-    "ValTot=".$totals['total']."\n".
+    "ValFac=".number_format($data['subtotal'], 2, '.', '')."\n".
+    "ValIva=".number_format($data['tax_total'], 2, '.', '')."\n".
+    "ValTot=".number_format($data['non_cash_total'], 2, '.', '')."\n".
     "CUFE=".$data['cufe']."\n".
     "QRCode=".$dian_config->catalog_url."document/searchqr?documentkey=".$data['cufe'];
 
     $data['qr_code'] = (new QRCode)->render($qr_text);
-
-    return $data;
 }
 
 /**
@@ -228,4 +246,65 @@ function load_customer_data(int $customer_id, array &$data, bool $stats = false)
     }
 
     return $customer_info;
+}
+
+function send_pdf(array $sale_data, string $type = 'invoice', string $invoice_xml = null): bool
+{
+    $config = config(OSPOS::class)->settings;
+    $token_lib = new Token_lib();
+    $email_lib = new Email_lib();
+    $sale_lib = new Sale_lib();
+
+    $result = false;
+    $message = lang('Sales.invoice_no_email');
+
+    if (!empty($sale_data['customer_email'])) {
+        $to = $sale_data['customer_email'];
+        $number = array_key_exists($type . "_number", $sale_data) ?  $sale_data[$type . "_number"] : "";
+        $subject = lang('Sales.' . $type) . ' ' . $number;
+
+        $text = $config['invoice_email_message'];
+        $tokens = [
+            new Token_invoice_sequence($number),
+            new Token_invoice_count('POS ' . $sale_data['sale_id']),
+            new Token_customer((array)$sale_data)
+        ];
+        $text = $token_lib->render($text, $tokens);
+        $sale_data['mimetype'] = mime_content_type(FCPATH . 'uploads/' . $config['company_logo']);
+
+        // Generate email attachment: invoice in PDF format
+        $view = Services::renderer();
+        $html = $view->setData($sale_data)->render("sales/$type" . '_email', $sale_data);
+
+        // Load PDF helper
+        helper(['dompdf', 'file']);
+        $filename = sys_get_temp_dir() . '/' . lang('Sales.' . $type) . '-' . str_replace('/', '-', $number) . '.pdf';
+        if (file_put_contents($filename, create_pdf($html)) !== false) {
+            $attachment = $filename;
+
+            if ($type == 'invoice' && !empty($invoice_xml)) {
+                $xml_filename = sys_get_temp_dir() . '/' . lang('Sales.' . $type) . '-' . str_replace('/', '-', $number) . '.xml';
+                file_put_contents($xml_filename, $invoice_xml);
+
+                $zip_filename = sys_get_temp_dir() . '/' . lang('Sales.' . $type) . '-' . str_replace('/', '-', $number) . '.zip';
+                $zip = new \ZipArchive();
+                if ($zip->open($zip_filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+                    $zip->addFile($filename, basename($filename));
+                    $zip->addFile($xml_filename, basename($xml_filename));
+                    $zip->close();
+                    $attachment = $zip_filename;
+                }
+            }
+
+            $result = $email_lib->sendEmail($to, $subject, $text, $attachment);
+        }
+
+        $message = lang($result ? "Sales." . $type . "_sent" : "Sales." . $type . "_unsent") . ' ' . $to;
+    }
+
+    echo json_encode(['success' => $result, 'message' => $message, 'id' => $sale_data['sale_id_num']]);
+
+    $sale_lib->clear_all();
+
+    return $result;
 }

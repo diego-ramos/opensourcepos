@@ -23,12 +23,18 @@ class SendPendingInvoices extends BaseCommand
 
     public function run(array $params)
     {
+        $saleId = $params[0] ?? null;
         $CIconfig = new Load_config();
         $CIconfig->load_config();
 
         $config = config(OSPOS::class)->settings;
         $queue = new InvoiceDianQueue();
-        $pending = $queue->where('status', 'pending')->findAll();
+        $queue->where('status', 'pending');
+        if(isset($saleId))
+        {
+            $queue->where('sale_id', $saleId);
+        }
+        $pending = $queue->findAll();
 
         if (empty($pending)) {
             CLI::write('✅ No pending invoices to process.', 'green');
@@ -72,7 +78,7 @@ class SendPendingInvoices extends BaseCommand
                 foreach ($data['cart'] as $item) {
                     $qty = (float) $item['quantity'];
                    
-                    $lineExtension = (float) $item['total']; // total without tax if tax_included is false, or total with tax?
+                    $lineExtension = (float) $item['discounted_total']; // total without tax if tax_included is false, or total with tax?
                     // OSPOS item['total'] usually includes discount but check if it includes tax.
                     // In _load_sale_data, it uses get_totals which computes subtotals.
                     
@@ -86,7 +92,7 @@ class SendPendingInvoices extends BaseCommand
                             if ($tax['line'] == $item['line']) {
                                 $taxPercent = (float) $tax['percent'];
                                 $taxAmount += (float) $tax['item_tax_amount'];
-                                $unit = (float) $item['price'] - $taxAmount;
+                                $unit = (float) $lineExtension - $taxAmount;
                             }
                         }
                     }else {
@@ -202,7 +208,7 @@ class SendPendingInvoices extends BaseCommand
                 $result = $dianfe->sendInvoice($invoiceData);
                 
                 if (is_array($result) && isset($result['response'])) {
-                    CLI::write("Raw Response: " . $result['response']);
+                    //CLI::write("Raw Response: " . $result['response']);
                     if (isset($result['status_description'])) {
                         $color = ($result['success'] ?? false) ? 'green' : 'red';
                         $prefix = ($result['success'] ?? false) ? '✅' : '❌';
@@ -210,7 +216,11 @@ class SendPendingInvoices extends BaseCommand
                     } else {
                         CLI::write("✅ Factura enviada a la DIAN.", "green");
                     }
-                    DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
+                    $dianStatus = DianResponseProcessor::processSoapResponse($entry['id'], $result['response']);
+
+                    if ($dianStatus === 'accepted') {
+                        $this->sendInvoiceByEmail($data, $result['signedXml']);
+                    }
                 } else {
                     $errorMsg = $result['error'] ?? 'Error desconocido';
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
@@ -225,4 +235,14 @@ class SendPendingInvoices extends BaseCommand
 
         CLI::write("✅ All pending invoices processed.", 'green');
     }
+
+    private function sendInvoiceByEmail(array $invoiceData, string $xmlContent)
+    {
+        if (!empty($invoiceData['customer_email'])) {
+          load_dian_data($invoiceData['sale_id_num'], $invoiceData);
+          send_pdf($invoiceData, 'invoice', $xmlContent);
+          CLI::write("✅ Factura enviada por correo electrónico a {$invoiceData['customer_email']}.", "green");
+        }
+    }
+    
 }

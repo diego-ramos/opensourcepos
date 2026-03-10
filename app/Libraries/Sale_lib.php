@@ -658,6 +658,7 @@ class Sale_lib
                 $sales_tax = bcadd($sales_tax, $tax['sale_tax_amount']);
             } else {
                 $subtotal = bcsub($subtotal, $tax['sale_tax_amount']);
+                $sales_tax = bcadd($sales_tax, $tax['sale_tax_amount']);
             }
         }
 

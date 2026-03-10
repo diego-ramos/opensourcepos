@@ -9,13 +9,13 @@ use DOMXPath;
 
 class DianResponseProcessor
 {
-    public static function processSoapResponse(int $queueId, string $soapResponseXml): bool
+    public static function processSoapResponse(int $queueId, string $soapResponseXml): string
     {
         $queue = (new InvoiceDianQueue())->find($queueId);
 
         if (!$queue) {
             log_message('error', "DIAN Queue ID {$queueId} not found.");
-            return false;
+            return 'error';
         }
 
         // Parsear XML SOAP
@@ -95,7 +95,7 @@ class DianResponseProcessor
 
         (new InvoiceDianQueue())->update($queueId, $dataToUpdate);
 
-        return true;
+        return $dianStatus;
     }
 
     public static function processError(int $queueId, string $errorMessage): bool

@@ -711,6 +711,7 @@ class Sales extends Secure_Controller
         $data['non_cash_total'] = $totals['total'];
         $data['cash_amount_due'] = $totals['cash_amount_due'];
         $data['non_cash_amount_due'] = $totals['amount_due'];
+        $data['tax_total'] = $totals['tax_total'];
 
         if ($data['cash_mode']) {    // TODO: Convert this to ternary notation
             $data['amount_due'] = $totals['cash_amount_due'];
@@ -779,6 +780,10 @@ class Sales extends Secure_Controller
                             'sale_id' => $data['sale_id_num'],
                             'status' => 'pending'
                         ]);
+
+                        command('dian:send-pending-invoices ' . $data['sale_id_num']);
+
+                        load_dian_data($data['sale_id_num'], $data);
                     }
 
                     echo view('sales/' . $invoice_view, $data);
@@ -884,7 +889,7 @@ class Sales extends Secure_Controller
     {
         $sale_data = $this->_load_sale_data($sale_id);
 
-        $result = false;
+      /*  $result = false;
         $message = lang('Sales.invoice_no_email');
 
         if (!empty($sale_data['customer_email'])) {
@@ -917,9 +922,9 @@ class Sales extends Secure_Controller
 
         echo json_encode(['success' => $result, 'message' => $message, 'id' => $sale_id]);
 
-        $this->sale_lib->clear_all();
+        $this->sale_lib->clear_all();*/
 
-        return $result;
+        return send_pdf($sale_data, $type);
     }
 
     /**

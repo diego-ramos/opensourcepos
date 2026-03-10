@@ -120,10 +120,12 @@
 
         <div class="totals_58"></div>
 
+        <?php if(isset($cufe)) { ?>
         <div id="barcode">
             <div class="wrap-text"> CUFE: <?= $cufe ?></div>
             <img src="<?= $qr_code ?>" alt="DIAN QR Code" style="width: 200px; height: 200px;" /><br>
         </div>
+        <?php } ?>
                
         <div class="center footer">
            
