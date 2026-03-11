@@ -308,3 +308,194 @@ function send_pdf(array $sale_data, string $type = 'invoice', ?string $invoice_x
 
     return $result;
 }
+
+/**
+ * Generate DIAN XML Document (Invoice, CreditNote, DebitNote)
+ * 
+ * @param int $sale_id
+ * @param string $documentType 'invoice', 'credit_note', 'debit_note'
+ * @return array|bool Unsigned XML string or false on failure
+ */
+function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'): array|bool
+{
+    $config = config(OSPOS::class)->settings;
+    $tax_lib = new Tax_lib();
+    $token_lib = new Token_lib();
+    $data = get_sale_data($sale_id);
+
+    if (empty($data['cart'])) {
+        return false;
+    }
+
+    // Build items
+    $lineItems = [];
+    foreach ($data['cart'] as $item) {
+        $qty = (float) $item['quantity'];
+        $lineExtension = (float) $item['discounted_total']; 
+        
+        $taxPercent = 0;
+        $taxAmount = 0;
+        if (isset($data['item_taxes']) && sizeof($data['item_taxes']) > 0) {
+            foreach ($data['item_taxes'] as $tax) {
+                if ($tax['line'] == $item['line']) {
+                    $taxPercent = (float) $tax['percent'];
+                    $taxAmount += (float) $tax['item_tax_amount'];
+                    $unit = (float) $lineExtension - $taxAmount;
+                }
+            }
+        }else {
+            $unit = (float) $item['price'];
+            $taxPercent = 0;
+            $taxAmount = 0;
+        }
+        
+        $lineItems[] = [
+            'line_number'    => $item['line'],
+            'description'   => $item['description'] ?: $item['name'],
+            'item_code'     => $item['item_id'] ?? '01',
+            'quantity'      => abs($qty),
+            'unit_code'     => 'NIU',
+            'unit_price'    => number_format(abs($unit), 2, '.', ''),
+            'discount'      => number_format((float) $item['discount'], 2, '.', ''),
+            'discount_type' => $item['discount_type'] == 0 ? 'percentage' : 'fixed',
+            'tax_percent'   => number_format($taxPercent, 2, '.', ''),
+            'tax_amount'    => number_format(abs($taxAmount), 2, '.', ''),
+            'tax_scheme'    => ['id' => '01', 'name' => 'IVA'],
+            'tax_exempt'    => $taxPercent == 0,
+            'line_extension'=> number_format(abs($lineExtension - $taxAmount), 2, '.', '')
+        ];
+    }
+
+    $taxTotal = abs((float)($data['total'] - $data['subtotal']));
+    $subtotal = abs((float)$data['subtotal']);
+    $invoiceTotal = abs((float)$data['total']);
+
+    $softwareID = $config['col_electronic_software_id'];
+    $pin = $config['col_electronic_pin'];
+    
+    $now = new \DateTime('now', new \DateTimeZone('America/Bogota'));
+    $issueDate = $now->format('Y-m-d');
+    $issueTime = $now->format('H:i:s-05:00');
+    $signingTimeValue = $now->format('Y-m-d\TH:i:s-05:00');
+
+    $newInvoiceNumber = $data['invoice_number'];
+
+    if($documentType !== 'invoice')
+    {
+        $invoice_format = $config['sales_invoice_format'];
+        $newInvoiceNumber = $token_lib->render($invoice_format, [], true);
+    }
+
+    if($documentType !== 'debit_note')
+    {
+        $newInvoiceNumber = $newInvoiceNumber+2;
+    }
+
+    // Mapping to InvoiceGenerator format
+    $docData = [
+        'document_type' => $documentType,
+        'invoice_env' => $config['col_electronic_test'] ? 'development' :'production',
+        'invoice_number' => $config['col_electronic_prefix'] . $newInvoiceNumber,
+        'issue_date' =>  $issueDate,
+        'issue_time' => $issueTime,
+        'technical_key' => $config['col_electronic_tech_id'],
+        'software_security_code' => hash('sha384', $softwareID . $pin . $newInvoiceNumber),
+        'software_id' => $softwareID,
+        'software_pin' => $pin,
+        'test_set_id' => $config['col_electronic_test'] ? $config['col_electronic_test_set_id'] : '',
+        'supplier' => [
+            'name'                  => $config['company'],
+            'tax_id'                => substr($config['tax_id'], 0, -2),
+            'tax_id_dv'             => substr($config['tax_id'], -1),
+            'document_type'         => $tax_lib->get_tax_id_type_code($config['tax_id_type']) ?? '31',
+            'additional_account_id' => '2',
+            'industry_code'         => $config['col_ciiu_code'] ?? '',
+            'tax_level_code'        => $config['col_tax_level_code'] ?? 'R-99-PN',
+            'tax_scheme_id'         => '01',
+            'tax_scheme_name'       => 'IVA',
+            'phone'                 => $config['phone'] ?? '',
+            'email'                 => $config['email'] ?? '',
+            'address'               => [
+                'id'                   => $config['col_city_code'] ?? '05615',
+                'city_name'            => $config['city'] ?? 'Rionegro',
+                'postal_zone'          => $config['col_postal_zone'] ?? '',
+                'country_subentity'    => $config['state'] ?? 'Antioquia',
+                'country_subentity_code'=> $config['col_state_code'] ?? '05',
+                'address_line'         => $config['address'] ?? '',
+                'country_code'         => 'CO',
+                'country_name'         => 'Colombia',
+            ],
+        ],
+        'customer' => [
+            'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
+            'tax_id'                => $data['customer_tax_id'] ?? '222222222222',
+            'document_type'         => $data['customer_tax_id_type'] ?? '13',
+            'additional_account_id' => '1',
+            'tax_level_code'        => 'R-99-PN',
+            'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
+            'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA',
+            'phone'                 => $data['customer_phone'] ?? '0000000',
+            'email'                 => $data['customer_email'] ?? $config['email'] ?? 'noemail@noemail.com',
+            'address'               => [
+                'id'                   => !empty($data['customer_city_code']) ? $data['customer_city_code'] : (!empty($config['col_city_code']) ? $config['col_city_code'] : '05615'),
+                'city_name'            => !empty($data['customer_city']) ? $data['customer_city'] : (!empty($config['city']) ? $config['city'] : 'Rionegro'),
+                'postal_zone'          => !empty($data['customer_postal_zone']) ? $data['customer_postal_zone'] : (!empty($config['col_postal_zone']) ? $config['col_postal_zone'] : ''),
+                'country_subentity'    => !empty($data['customer_state']) ? $data['customer_state'] : (!empty($config['state']) ? $config['state'] : 'Antioquia'),
+                'country_subentity_code'=> !empty($data['customer_state_code']) ? $data['customer_state_code'] : (!empty($config['col_state_code']) ? $config['col_state_code'] : '05'),
+                'address_line'         => !empty($data['customer_address']) ? $data['customer_address'] : (!empty($config['address']) ? $config['address'] : ''),
+                'country_code'         => 'CO',
+                'country_name'         => 'Colombia',
+            ],
+        ],
+        'tax_total' => number_format($taxTotal, 2, '.', ''),
+        'subtotal' => number_format($subtotal, 2, '.', ''),
+        'invoice_total' => number_format($invoiceTotal, 2, '.', ''),
+        'items' => $lineItems,
+        'signing_time' => $signingTimeValue,
+        'cufe' => $data['cufe'] ?? null, // Re-use pre-generated UUID/CUFE if available
+    ];
+
+    if (!empty($config['col_electronic_range_resolution'])) {
+        $docData['resolution'] = [
+            'authorization_number' => $config['col_electronic_range_resolution'],
+            'start_date' => $config['col_electronic_range_start_date'],
+            'end_date' => $config['col_electronic_range_end_date'],
+            'from' => $config['col_electronic_range_min'],
+            'to' => $config['col_electronic_range_max'],
+            'prefix' => $config['col_electronic_prefix']
+        ];
+    }
+
+    // Reference logic for Credit/Debit notes
+    if ($documentType !== 'invoice') {
+        $sale_model = model(Sale::class);
+        $queue_model = model(InvoiceDianQueue::class);
+
+        $parent_queue = $queue_model->where('sale_id', $sale_id)->where('dian_status', 'accepted')->first();
+
+        $docData['billing_reference'] = [
+                    'invoice_id' => $config['col_electronic_prefix'] . $data['invoice_number'], // e.g. "SETT1"
+                    'uuid' => $parent_queue['dian_cufe'],
+                    'issue_date' => date('Y-m-d', strtotime($parent_queue['updated_at']))
+                ];
+    }
+
+   // return \DianFE\InvoiceGenerator::generate($docData);
+   return $docData;
+}
+
+/**
+ * Generate Credit Note XML
+ */
+function generateCreditNote(int $sale_id): string|bool
+{
+    return getDocumentDataForDian($sale_id, 'credit_note');
+}
+
+/**
+ * Generate Debit Note XML
+ */
+function generateDebitNote(int $sale_id): string|bool
+{
+    return getDocumentDataForDian($sale_id, 'debit_note');
+}

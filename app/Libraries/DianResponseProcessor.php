@@ -9,15 +9,8 @@ use DOMXPath;
 
 class DianResponseProcessor
 {
-    public static function processSoapResponse(int $queueId, string $soapResponseXml, string $xmlGenerated = null, string $xmlSigned = null): string
+    public static function processSoapResponse(string $soapResponseXml): array
     {
-        $queue = (new InvoiceDianQueue())->find($queueId);
-
-        if (!$queue) {
-            log_message('error', "DIAN Queue ID {$queueId} not found.");
-            return 'error';
-        }
-
         // Parsear XML SOAP
         $dom = new DOMDocument();
         $dom->loadXML($soapResponseXml);
@@ -82,25 +75,39 @@ class DianResponseProcessor
         }
 
         $dataToUpdate = [
-            'status'                     => $dianStatus === 'accepted' ? 'sent' : 'error',
+            'status'                    => $dianStatus === 'accepted' ? 'sent' : 'error',
             'dian_cufe'                 => $cufe,
             'dian_response_code'        => $responseCode,
             'dian_response_description' => $responseDescription,
             'dian_application_response' => $applicationResponse,
-            'xml_generated'             => $xmlGenerated,
-            'xml_signed'                => $xmlSigned,
             'dian_status'               => $dianStatus,
             'error_message'             => $errorMessage,
             'dian_sent_at'              => date('Y-m-d H:i:s'),
             'updated_at'                => date('Y-m-d H:i:s')
         ];
 
-        (new InvoiceDianQueue())->update($queueId, $dataToUpdate);
-
-        return $dianStatus;
+        return $dataToUpdate;
     }
 
-    public static function processError(int $queueId, string $errorMessage, string $xmlGenerated = null, string $xmlSigned = null): bool
+    public static function processAndUpdateSoapResponse(int $queueId, string $soapResponseXml, ?string $xmlGenerated = null, ?string $xmlSigned = null): string
+    {
+        $queue = (new InvoiceDianQueue())->find($queueId);
+
+        if (!$queue) {
+            log_message('error', "DIAN Queue ID {$queueId} not found.");
+            return 'error';
+        }
+
+        $dataToUpdate = self::processSoapResponse($soapResponseXml);
+        $dataToUpdate['xml_generated'] = $xmlGenerated;
+        $dataToUpdate['xml_signed'] = $xmlSigned;
+
+        (new InvoiceDianQueue())->update($queueId, $dataToUpdate);
+
+        return $dataToUpdate['status'];
+    }
+
+    public static function processError(int $queueId, string $errorMessage, ?string $xmlGenerated = null, ?string $xmlSigned = null): bool
     {
         $queue = (new InvoiceDianQueue())->find($queueId);
 

@@ -211,7 +211,6 @@ class SendPendingInvoices extends BaseCommand
                 $xmlSigned = $result['signedXml'] ?? null;
 
                 if (is_array($result) && isset($result['response'])) {
-                    //CLI::write("Raw Response: " . $result['response']);
                     if (isset($result['status_description'])) {
                         $color = ($result['success'] ?? false) ? 'green' : 'red';
                         $prefix = ($result['success'] ?? false) ? '✅' : '❌';
@@ -219,7 +218,7 @@ class SendPendingInvoices extends BaseCommand
                     } else {
                         CLI::write("✅ Factura enviada a la DIAN.", "green");
                     }
-                    $dianStatus = DianResponseProcessor::processSoapResponse($entry['id'], $result['response'], $xmlGenerated, $xmlSigned);
+                    $dianStatus = DianResponseProcessor::processAndUpdateSoapResponse($entry['id'], $result['response'], $xmlGenerated, $xmlSigned);
 
                     if ($dianStatus === 'accepted') {
                         $this->sendInvoiceByEmail($data, $result['signedXml']);
