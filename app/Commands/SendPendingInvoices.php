@@ -147,8 +147,8 @@ class SendPendingInvoices extends BaseCommand
                     'software_id' => $softwareID,
                     'software_pin' => $pin,
                     'test_set_id' => $config['col_electronic_test'] ? $config['col_electronic_test_set_id'] : '',
-                    'emitter_document_number' => substr($config['tax_id'], 0, -2),
-                    'customer_document_number' => $data['customer_tax_id'] ?? '222222222222',
+                    //'emitter_document_number' => substr($config['tax_id'], 0, -2),
+                    //'customer_document_number' => $data['customer_tax_id'] ?? '222222222222',
                     'supplier' => [
                         'name'                  => $config['company'],
                         'tax_id'                => substr($config['tax_id'], 0, -2),
@@ -174,12 +174,13 @@ class SendPendingInvoices extends BaseCommand
                     ], //tax_responsibility
                     'customer' => [
                         'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
-                        'tax_id'                => $data['customer_tax_id'] ?? '222222222222',
+                        'tax_id'                => explode('-', $data['customer_tax_id'] ?? '222222222222')[0],
+                        'tax_id_dv'             => count(explode('-', $data['customer_tax_id'] ?? '')) > 1 ? explode('-', $data['customer_tax_id'])[1] : '0',
                         'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
                         'additional_account_id' => $data['customer_tax_payer_type'] ?? '1',
                         'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
-                        'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
-                        'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA',
+                        'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : 'ZZ',
+                        'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'No aplica',
                         'phone'                 => $data['customer_phone'] ?? '0000000',
                         'email'                 => $data['customer_email'] ?? $config['email'] ?? 'noemail@noemail.com',
                         'address'               => [
