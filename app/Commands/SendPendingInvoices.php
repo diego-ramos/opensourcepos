@@ -177,10 +177,10 @@ class SendPendingInvoices extends BaseCommand
                         'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
                         'additional_account_id' => '1',
                         'tax_level_code'        => 'R-99-PN',
-                        'tax_scheme_id'         => 'ZZ',
-                        'tax_scheme_name'       => 'No aplica',
+                        'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
+                        'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA',
                         'phone'                 => $data['customer_phone'] ?? '0000000',
-                        'email'                 => $data['customer_email'] ?? $config['email'] ?? '',
+                        'email'                 => $data['customer_email'] ?? $config['email'] ?? 'noemail@noemail.com',
                         'address'               => [
                             'id'                   => !empty($data['customer_city_code']) ? $data['customer_city_code'] : (!empty($config['col_city_code']) ? $config['col_city_code'] : '05615'),
                             'city_name'            => !empty($data['customer_city']) ? $data['customer_city'] : (!empty($config['city']) ? $config['city'] : 'Rionegro'),
@@ -240,7 +240,7 @@ class SendPendingInvoices extends BaseCommand
 
     private function sendInvoiceByEmail(array $invoiceData, string $xmlContent)
     {
-        if (!empty($invoiceData['customer_email'])) {
+        if (!empty($invoiceData['customer_email']) && $invoiceData['customer_email'] !== 'noemail@noemail.com') {
           load_dian_data($invoiceData['sale_id_num'], $invoiceData);
           send_pdf($invoiceData, 'invoice', $xmlContent);
           CLI::write("✅ Factura enviada por correo electrónico a {$invoiceData['customer_email']}.", "green");

@@ -7,12 +7,8 @@ require_once ROOTPATH . 'vendor/autoload.php';
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use App\Libraries\DianResponseProcessor;
-use App\Libraries\Tax_lib;
-use App\Models\InvoiceDianQueue;
 use Config\OSPOS;
 use DianFE\DianFE;
-use DateTime;
-use DateTimeZone;
 use App\Events\Load_config;
 
 class SendingAdditionalDocuments extends BaseCommand

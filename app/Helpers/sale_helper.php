@@ -429,7 +429,7 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
         'customer' => [
             'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
             'tax_id'                => $data['customer_tax_id'] ?? '222222222222',
-            'document_type'         => $data['customer_tax_id_type'] ?? '13',
+            'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
             'additional_account_id' => '1',
             'tax_level_code'        => 'R-99-PN',
             'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
@@ -468,7 +468,6 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
 
     // Reference logic for Credit/Debit notes
     if ($documentType !== 'invoice') {
-        $sale_model = model(Sale::class);
         $queue_model = model(InvoiceDianQueue::class);
 
         $parent_queue = $queue_model->where('sale_id', $sale_id)->where('dian_status', 'accepted')->first();
