@@ -132,6 +132,19 @@
                             ) ?>
                         </div>
                     </div>
+
+                    <div class="form-group form-group-sm">
+                        <?= form_label(lang('Customers.tax_responsibility'), 'tax_responsibility', ['class' => 'control-label col-xs-3']) ?>
+                        <div class="col-xs-8">
+                            <?= form_multiselect(
+                                'tax_responsibility[]',
+                                $responsabilidad_fiscal_options,
+                                $person_info->tax_responsibility,
+                                'id="tax_responsibility" class="form-control" size="5"'
+                            ) ?>
+                            <span class="help-block">Si selecciona <b>R-99-PN</b> no podrá seleccionar otros valores.</span>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <?php if ($config['customer_reward_enable']): ?>
@@ -482,6 +495,19 @@
             appendTo: '.modal-content',
             select: fill_value,
             focus: fill_value
+        });
+
+        $('#tax_responsibility').on('change', function() {
+            var selected = $(this).val();
+            if (selected && selected.length > 1) {
+                if (selected.indexOf('R-99-PN') !== -1) {
+                    // If R-99-PN was just selected, deselect others.
+                    // If others were already selected and R-99-PN is added, we prefer R-99-PN or others?
+                    // "If user choose R-99-PN no other values could be selected"
+                    // Usually this means if R-99-PN is in the list, it should be the ONLY one.
+                    $(this).val(['R-99-PN']);
+                }
+            }
         });
 
         $('#customer_form').validate($.extend({

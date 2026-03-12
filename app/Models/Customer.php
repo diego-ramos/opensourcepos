@@ -28,7 +28,8 @@ class Customer extends Person
         'date',
         'employee_id',
         'consent',
-        'tax_id_type'
+        'tax_id_type',
+        'tax_responsibility'
     ];
 
 

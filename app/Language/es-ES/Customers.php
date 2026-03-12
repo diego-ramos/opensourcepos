@@ -54,4 +54,6 @@ return [
     "total"                         => "Total",
     "update"                        => "Actualizar Cliente",
     "rewards_package"               => "Paquete de recompensas",
+    "tax_responsibility"            => "Responsabilidad Fiscal",
+    "tax_id_type"                   => "Tipo de Identificación"
 ];

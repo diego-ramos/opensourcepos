@@ -232,6 +232,16 @@ class Customers extends Persons
         // Retrieve tax id types
         $data['tax_id_types'] = $this->tax_id_type->get_active()->getResultArray();
 
+        $info->tax_responsibility = explode(';', $info->tax_responsibility ?? '');
+
+        $data['responsabilidad_fiscal_options'] = [
+            'O-13'    => 'O-13 Gran contribuyente',
+            'O-15'    => 'O-15 Autorretenedor',
+            'O-23'    => 'O-23 Agente de retención IVA',
+            'O-47'    => 'O-47 Régimen simple de tributación',
+            'R-99-PN' => 'R-99-PN No aplica – Otros'
+        ];
+
         echo view("customers/form", $data);
     }
 
@@ -279,6 +289,17 @@ class Customers extends Persons
             'employee_id'       => $this->request->getPost('employee_id', FILTER_SANITIZE_NUMBER_INT),
             'sales_tax_code_id' => $this->request->getPost('sales_tax_code_id') == '' ? null : $this->request->getPost('sales_tax_code_id', FILTER_SANITIZE_NUMBER_INT)
         ];
+
+        $responsabilidades = $this->request->getPost('tax_responsibility');
+        if (is_array($responsabilidades)) {
+            if (in_array('R-99-PN', $responsabilidades)) {
+                $customer_data['tax_responsibility'] = 'R-99-PN';
+            } else {
+                $customer_data['tax_responsibility'] = implode(';', $responsabilidades);
+            }
+        } else {
+            $customer_data['tax_responsibility'] = $responsabilidades;
+        }
 
         if ($this->customer->save_customer($person_data, $customer_data, $customer_id)) {
             // Save customer to Mailchimp selected list    // TODO: addOrUpdateMember should be refactored. Potentially pass an array or object instead of 6 parameters.

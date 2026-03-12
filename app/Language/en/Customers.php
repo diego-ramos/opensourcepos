@@ -56,5 +56,6 @@ return [
     "taxable"                       => "Taxable",
     "total"                         => "Total spent",
     "update"                        => "Update Customer",
-    "rewards_package"               => "Rewards Package"
+    "rewards_package"               => "Rewards Package",
+    "tax_responsibility"            => "Tax Responsibility"
 ];

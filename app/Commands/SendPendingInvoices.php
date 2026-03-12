@@ -170,13 +170,13 @@ class SendPendingInvoices extends BaseCommand
                             'country_code'         => 'CO',
                             'country_name'         => 'Colombia',
                         ],
-                    ],
+                    ], //tax_responsibility
                     'customer' => [
                         'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
                         'tax_id'                => $data['customer_tax_id'] ?? '222222222222',
                         'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
                         'additional_account_id' => '1',
-                        'tax_level_code'        => 'R-99-PN',
+                        'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
                         'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
                         'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA',
                         'phone'                 => $data['customer_phone'] ?? '0000000',
