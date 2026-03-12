@@ -241,6 +241,7 @@ function load_customer_data(int $customer_id, array &$data, bool $stats = false)
         $data['customer_tax_id'] = $customer_info->tax_id;
         $data['customer_tax_id_type'] = $tax_lib->get_tax_id_type_code($customer_info->tax_id_type);
         $data['customer_tax_responsibility'] = $customer_info->tax_responsibility;
+        $data['customer_tax_payer_type'] = $customer_info->tax_payer_type;
         $data['customer_city'] = $customer_info->city;
         $data['customer_state'] = $customer_info->state;
         $data['customer_name'] = !empty($customer_info->company_name) ? $customer_info->company_name : $customer_info->first_name . ' ' . $customer_info->last_name;
@@ -431,7 +432,7 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
             'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
             'tax_id'                => $data['customer_tax_id'] ?? '222222222222',
             'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
-            'additional_account_id' => '1',
+            'additional_account_id' => $data['customer_tax_payer_type'] ?? '1',
             'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
             'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
             'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA',

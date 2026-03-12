@@ -242,6 +242,11 @@ class Customers extends Persons
             'R-99-PN' => 'R-99-PN No aplica – Otros'
         ];
 
+        $data['tax_payer_type_options'] = [
+            '1' => '1 - Persona Jurídica y asimiladas',
+            '2' => '2 - Persona Natural y asimiladas'
+        ];
+
         echo view("customers/form", $data);
     }
 
@@ -280,6 +285,7 @@ class Customers extends Persons
             'account_number'    => $this->request->getPost('account_number') == '' ? null : $this->request->getPost('account_number'),
             'tax_id'            => $this->request->getPost('tax_id'),
             'tax_id_type'       => $this->request->getPost('tax_id_type', FILTER_SANITIZE_NUMBER_INT),
+            'tax_payer_type'    => $this->request->getPost('tax_payer_type', FILTER_SANITIZE_NUMBER_INT),
             'company_name'      => $this->request->getPost('company_name') == '' ? null : $this->request->getPost('company_name'),
             'discount'          => $this->request->getPost('discount') == '' ? 0.00 : parse_decimals($this->request->getPost('discount')),
             'discount_type'     => $this->request->getPost('discount_type') == null ? PERCENT : $this->request->getPost('discount_type', FILTER_SANITIZE_NUMBER_INT),

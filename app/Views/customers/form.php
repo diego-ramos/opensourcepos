@@ -134,6 +134,18 @@
                     </div>
 
                     <div class="form-group form-group-sm">
+                         <?= form_label(lang('Customers.tax_payer_type'), 'tax_payer_type', ['class' => 'control-label col-xs-3']) ?>
+                         <div class="col-xs-8">
+                             <?= form_dropdown(
+                                 'tax_payer_type',
+                                 $tax_payer_type_options,
+                                 $person_info->tax_payer_type,
+                                 'id="tax_payer_type" class="form-control" '
+                             ) ?>
+                         </div>
+                    </div>
+
+                    <div class="form-group form-group-sm">
                         <?= form_label(lang('Customers.tax_responsibility'), 'tax_responsibility', ['class' => 'control-label col-xs-3']) ?>
                         <div class="col-xs-8">
                             <?= form_multiselect(

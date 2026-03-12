@@ -57,5 +57,6 @@ return [
     "total"                         => "Total spent",
     "update"                        => "Update Customer",
     "rewards_package"               => "Rewards Package",
-    "tax_responsibility"            => "Tax Responsibility"
+    "tax_responsibility"            => "Tax Responsibility",
+    "tax_payer_type"                => "Tax Payer Type"
 ];
