@@ -242,6 +242,7 @@ function load_customer_data(int $customer_id, array &$data, bool $stats = false)
         $data['customer_tax_id_type'] = $tax_lib->get_tax_id_type_code($customer_info->tax_id_type);
         $data['customer_tax_responsibility'] = $customer_info->tax_responsibility;
         $data['customer_tax_payer_type'] = $customer_info->tax_payer_type;
+        $data['customer_tax_scheme'] = $customer_info->tax_scheme;
         $data['customer_city'] = $customer_info->city;
         $data['customer_state'] = $customer_info->state;
         $data['customer_name'] = !empty($customer_info->company_name) ? $customer_info->company_name : $customer_info->first_name . ' ' . $customer_info->last_name;
@@ -320,6 +321,8 @@ function send_pdf(array $sale_data, string $type = 'invoice', ?string $invoice_x
  */
 function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'): array|bool
 {
+    helper('sale');
+    helper('dian');
     $config = config(OSPOS::class)->settings;
     $tax_lib = new Tax_lib();
     $token_lib = new Token_lib();
@@ -435,8 +438,8 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
             'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
             'additional_account_id' => $data['customer_tax_payer_type'] ?? '1',
             'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
-            'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01',
-            'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA',
+            'tax_scheme_id'         => $data['customer_tax_scheme'] ?: (($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01'),
+            'tax_scheme_name'       => get_tax_scheme_name($data['customer_tax_scheme'] ?: (($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA')),
             'phone'                 => $data['customer_phone'] ?? '0000000',
             'email'                 => $data['customer_email'] ?? $config['email'] ?? 'noemail@noemail.com',
             'address'               => [

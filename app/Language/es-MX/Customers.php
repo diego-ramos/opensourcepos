@@ -53,6 +53,7 @@ return [
     "tax_responsibility"            => "Responsabilidad Fiscal",
     "tax_id_type"                   => "Tipo de Identificación",
     "tax_payer_type"                => "Tipo de Contribuyente",
+    "tax_scheme"                    => "Responsabilidad Tributaria",
     "taxable"                       => "Impuestable",
     "total"                         => "Gasto total",
     "update"                        => "Actualizar Cliente",

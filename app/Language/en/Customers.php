@@ -58,5 +58,6 @@ return [
     "update"                        => "Update Customer",
     "rewards_package"               => "Rewards Package",
     "tax_responsibility"            => "Tax Responsibility",
-    "tax_payer_type"                => "Tax Payer Type"
+    "tax_payer_type"                => "Tax Payer Type",
+    "tax_scheme"                    => "Tax Scheme"
 ];

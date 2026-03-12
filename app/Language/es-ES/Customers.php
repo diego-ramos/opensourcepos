@@ -56,5 +56,6 @@ return [
     "rewards_package"               => "Paquete de recompensas",
     "tax_responsibility"            => "Responsabilidad Fiscal",
     "tax_id_type"                   => "Tipo de Identificación",
-    "tax_payer_type"                => "Tipo de Contribuyente"
+    "tax_payer_type"                => "Tipo de Contribuyente",
+    "tax_scheme"                    => "Responsabilidad Tributaria"
 ];

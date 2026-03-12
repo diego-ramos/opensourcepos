@@ -34,6 +34,57 @@ function get_tax_payer_type_options(): array
 }
 
 /**
+ * Returns the tax scheme options (Responsabilidad Tributaria) required by DIAN
+ * 
+ * @return array
+ */
+function get_tax_scheme_options(): array
+{
+    return [
+        '01' => '01 - IVA',
+        '04' => '04 - INC',
+        '05' => '05 - ReteIVA',
+        '06' => '06 - ReteFuente',
+        '07' => '07 - ReteICA',
+        'ZY' => 'ZY - No causa',
+        'ZZ' => 'ZZ - No aplica'
+    ];
+}
+
+/**
+ * Returns the human-readable label for a tax scheme.
+ */
+function get_tax_scheme_label(?string $id): string
+{
+    if (empty($id)) {
+        return '';
+    }
+
+    $options = get_tax_scheme_options();
+    return $options[$id] ?? (string)$id;
+}
+
+/**
+ * Returns just the name part of the tax scheme (e.g. 'IVA' from '01 - IVA')
+ */
+function get_tax_scheme_name(?string $id): string
+{
+    if (empty($id)) {
+        return '';
+    }
+
+    $options = get_tax_scheme_options();
+    $label = $options[$id] ?? '';
+    
+    if (empty($label)) {
+        return (string)$id;
+    }
+
+    $parts = explode(' - ', $label);
+    return count($parts) > 1 ? $parts[1] : $parts[0];
+}
+
+/**
  * Returns the human-readable labels for tax responsibility codes.
  * Supports a single code or a semicolon-separated list of codes.
  * 

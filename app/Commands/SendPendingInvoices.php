@@ -179,8 +179,8 @@ class SendPendingInvoices extends BaseCommand
                         'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
                         'additional_account_id' => $data['customer_tax_payer_type'] ?? '1',
                         'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
-                        'tax_scheme_id'         => ($data['customer_tax_id'] == '222222222222') ? 'ZZ' : 'ZZ',
-                        'tax_scheme_name'       => ($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'No aplica',
+                        'tax_scheme_id'         => $data['customer_tax_scheme'] ?: (($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01'),
+                        'tax_scheme_name'       => get_tax_scheme_name($data['customer_tax_scheme'] ?: (($data['customer_tax_id'] == '222222222222') ? 'No aplica' : 'IVA')),
                         'phone'                 => $data['customer_phone'] ?? '0000000',
                         'email'                 => $data['customer_email'] ?? $config['email'] ?? 'noemail@noemail.com',
                         'address'               => [
