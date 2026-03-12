@@ -33,6 +33,8 @@ class Customers extends Persons
         $this->tax_id_type = model(Tax_id_type::class);
         $this->config = config(OSPOS::class)->settings;
 
+        helper('dian');
+
         $encrypter = Services::encrypter();
 
         if (!empty($this->config['mailchimp_list_id'])) {
@@ -234,18 +236,8 @@ class Customers extends Persons
 
         $info->tax_responsibility = explode(';', $info->tax_responsibility ?? '');
 
-        $data['responsabilidad_fiscal_options'] = [
-            'O-13'    => 'O-13 Gran contribuyente',
-            'O-15'    => 'O-15 Autorretenedor',
-            'O-23'    => 'O-23 Agente de retención IVA',
-            'O-47'    => 'O-47 Régimen simple de tributación',
-            'R-99-PN' => 'R-99-PN No aplica – Otros'
-        ];
-
-        $data['tax_payer_type_options'] = [
-            '1' => '1 - Persona Jurídica y asimiladas',
-            '2' => '2 - Persona Natural y asimiladas'
-        ];
+        $data['responsabilidad_fiscal_options'] = get_tax_responsibility_options();
+        $data['tax_payer_type_options'] = get_tax_payer_type_options();
 
         echo view("customers/form", $data);
     }
