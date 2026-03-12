@@ -72,3 +72,52 @@ function get_tax_payer_type_label($id): string
     $options = get_tax_payer_type_options();
     return $options[$id] ?? (string)$id;
 }
+
+/**
+ * Maps POS payment type strings to DIAN payment method codes.
+ * POS payment types are language-dependent strings stored in the database.
+ * 
+ * @param string|null $payment_type
+ * @return string
+ */
+function get_dian_payment_code(?string $payment_type): string
+{
+    if (empty($payment_type)) {
+        return 'ZZZ'; // Otro (Default)
+    }
+
+    // Decode HTML entities (e.g., &eacute; -> é) and trim
+    $payment_type = trim(html_entity_decode($payment_type, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+    // Mapping array (Spanish and English)
+    $mapping = [
+        // Spanish
+        'Efectivo'               => '10',
+        'Tarjeta de débito'      => '49',
+        'Tarjeta de Débito'      => '49',
+        'Tarjeta de Crédito'     => '48',
+        'Tarjeta de crédito'     => '48',
+        'Cheque'                 => '20',
+        'Tarjeta de regalo'      => '71',
+        'Puntos de recompensa'   => '71',
+        'Adeudo'                 => 'ZZZ',
+        
+        // English
+        'Cash'                   => '10',
+        'Debit Card'             => '49',
+        'Credit Card'            => '48',
+        'Check'                  => '20',
+        'Gift Card'              => '71',
+        'Rewards'                => '71',
+        'Due'                    => 'ZZZ'
+    ];
+
+    // Case-insensitive search
+    foreach ($mapping as $key => $code) {
+        if (strcasecmp($key, $payment_type) === 0) {
+            return $code;
+        }
+    }
+
+    return 'ZZZ'; // Default to "Otro"
+}

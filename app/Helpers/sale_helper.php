@@ -454,7 +454,11 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
         'invoice_total' => number_format($invoiceTotal, 2, '.', ''),
         'items' => $lineItems,
         'signing_time' => $signingTimeValue,
-        'cufe' => $data['cufe'] ?? null, // Re-use pre-generated UUID/CUFE if available
+        'cufe' => $data['cufe'] ?? null,
+        'payment_means' => array_map(function($p) {
+            $p = (array)$p;
+            return ['code' => get_dian_payment_code($p['payment_type'] ?? 'Efectivo')];
+        }, $data['payments'] ?? []),
     ];
 
     if (!empty($config['col_electronic_range_resolution'])) {

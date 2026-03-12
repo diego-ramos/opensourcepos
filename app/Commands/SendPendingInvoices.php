@@ -44,6 +44,7 @@ class SendPendingInvoices extends BaseCommand
         CLI::write('📤 Sending ' . count($pending) . ' pending invoice(s) to DIAN...', 'yellow');
 
         helper('sale');
+        helper('dian');
 
         $dianConfig = [
             'cert_path' => $config['col_electronic_invoice_cert_crt_path'],
@@ -197,6 +198,10 @@ class SendPendingInvoices extends BaseCommand
                     'invoice_total' => number_format($invoiceTotal, 2, '.', ''),
                     'items' => $lineItems,
                     'signing_time' => $signingTimeValue,
+                    'payment_means' => array_map(function($p) {
+                        $p = (array)$p;
+                        return ['code' => get_dian_payment_code($p['payment_type'] ?? 'Efectivo')];
+                    }, $data['payments'] ?? []),
                 ];
 
                 $invoiceData['resolution'] = $dianConfig['resolution'];
