@@ -109,26 +109,46 @@
 </div>
 
 <div class="form-group form-group-sm">
-    <?= form_label(lang('Common.city'), 'city', ['class' => 'control-label col-xs-3']) ?>
+    <?= form_label(lang('Common.state'), 'state', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-8">
-        <?= form_input([
-            'name'  => 'city',
-            'id'    => 'city',
-            'class' => 'form-control input-sm',
-            'value' => $person_info->city
-        ]) ?>
+        <?php if (isset($col_states)): ?>
+            <select name="state" id="state" class="form-control input-sm">
+                <option value=""><?= lang('Common.none_selected_text') ?></option>
+                <?php foreach ($col_states as $code => $name): ?>
+                    <option value="<?= $name ?>" data-code="<?= $code ?>" <?= $person_info->state == $name ? 'selected' : '' ?>><?= $name ?></option>
+                <?php endforeach; ?>
+            </select>
+        <?php else: ?>
+            <?= form_input([
+                'name'  => 'state',
+                'id'    => 'state',
+                'class' => 'form-control input-sm',
+                'value' => $person_info->state
+            ]) ?>
+        <?php endif; ?>
     </div>
 </div>
 
 <div class="form-group form-group-sm">
-    <?= form_label(lang('Common.state'), 'state', ['class' => 'control-label col-xs-3']) ?>
+    <?= form_label(lang('Common.city'), 'city', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-8">
-        <?= form_input([
-            'name'  => 'state',
-            'id'    => 'state',
-            'class' => 'form-control input-sm',
-            'value' => $person_info->state
-        ]) ?>
+        <?php if (isset($col_cities)): ?>
+            <select name="city" id="city" class="form-control input-sm" <?= empty($person_info->state) ? 'disabled' : '' ?>>
+                <?php if (empty($person_info->state)): ?>
+                    <option value=""><?= lang('Common.none_selected_text') ?></option>
+                <?php endif; ?>
+                <?php foreach ($col_cities as $code => $name): ?>
+                    <option value="<?= $name ?>" <?= $person_info->city == $name ? 'selected' : '' ?>><?= $name ?></option>
+                <?php endforeach; ?>
+            </select>
+        <?php else: ?>
+            <?= form_input([
+                'name'  => 'city',
+                'id'    => 'city',
+                'class' => 'form-control input-sm',
+                'value' => $person_info->city
+            ]) ?>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -171,33 +191,57 @@
 <script type="text/javascript">
     // Validation and submit handling
     $(document).ready(function() {
-        nominatim.init({
-            fields: {
-                postcode: {
-                    dependencies: ["postcode", "city", "state", "country"],
-                    response: {
-                        field: 'postalcode',
-                        format: ["postcode", "village|town|hamlet|city_district|city", "state", "country"]
+
+        <?php if (isset($col_states)): ?>
+        $('#state').change(function() {
+            var $city_dropdown = $('#city');
+            var $selected = $(this).find(':selected');
+            var state_code = $selected.attr('data-code') || $selected.val();
+            
+            console.log('State changed to:', $selected.val(), 'Code:', state_code);
+
+            $city_dropdown.empty().prop('disabled', true);
+            $city_dropdown.append($('<option>', {
+                value: '',
+                text: '<?= lang('Common.wait') ?>...'
+            }));
+
+            if (state_code) {
+                $.ajax({
+                    url: '<?= site_url("customers/citiesAjax") ?>',
+                    data: {state_code: state_code},
+                    dataType: 'json',
+                    cache: false,
+                    success: function(cities) {
+                        $city_dropdown.empty().prop('disabled', false);
+                        if ($.isEmptyObject(cities)) {
+                            $city_dropdown.append($('<option>', { value: '', text: '<?= lang('Common.none_selected_text') ?>' }));
+                        } else {
+                            $.each(cities, function(code, name) {
+                                $city_dropdown.append($('<option>', {
+                                    value: name,
+                                    text: name
+                                }));
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                        $city_dropdown.empty().prop('disabled', false);
+                        $city_dropdown.append($('<option>', {
+                            value: '',
+                            text: 'Error'
+                        }));
                     }
-                },
-
-                city: {
-                    dependencies: ["postcode", "city", "state", "country"],
-                    response: {
-                        format: ["postcode", "village|town|hamlet|city_district|city", "state", "country"]
-                    }
-                },
-
-                state: {
-                    dependencies: ["state", "country"]
-                },
-
-                country: {
-                    dependencies: ["state", "country"]
-                }
-            },
-            language: '<?= current_language_code() ?>',
-            country_codes: '<?= esc($config['country_codes'], 'js') ?>'
+                });
+            } else {
+                $city_dropdown.empty().prop('disabled', true);
+                $city_dropdown.append($('<option>', {
+                    value: '',
+                    text: '<?= lang('Common.none_selected_text') ?>'
+                }));
+            }
         });
+        <?php endif; ?>
     });
 </script>

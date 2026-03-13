@@ -239,6 +239,10 @@ class Customers extends Persons
         $data['responsabilidad_fiscal_options'] = get_tax_responsibility_options();
         $data['tax_payer_type_options'] = get_tax_payer_type_options();
         $data['tax_scheme_options'] = get_tax_scheme_options();
+        $data['col_states'] = get_colombia_states();
+        
+        $current_state_code = get_dian_state_code($info->state);
+        $data['col_cities'] = get_colombia_cities($current_state_code);
 
         echo view("customers/form", $data);
     }
@@ -502,5 +506,21 @@ class Customers extends Persons
                 echo json_encode(['success' => false, 'message' => lang('Customers.csv_import_nodata_wrongformat')]);
             }
         }
+    }
+
+    public function getCitiesAjax(): void
+    {
+        helper('dian');
+        $state_code = $this->request->getGet('state_code');
+        
+        // If not a code (e.g. its a name or empty), try to resolve it
+        if (!is_numeric($state_code)) {
+            $state_code = get_dian_state_code((string)$state_code);
+        }
+        
+        $cities = get_colombia_cities($state_code);
+        
+        $this->response->setContentType('application/json');
+        echo json_encode($cities);
     }
 }

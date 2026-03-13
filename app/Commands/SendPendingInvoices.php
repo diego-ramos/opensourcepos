@@ -60,7 +60,8 @@ class SendPendingInvoices extends BaseCommand
                 'from' => $config['col_electronic_range_min'],
                 'to' => $config['col_electronic_range_max'],
                 'prefix' => $config['col_electronic_prefix']
-            ]
+            ],
+            'output_path' => WRITEPATH . 'dian_xmls'
         ];
         
         foreach ($pending as $entry) {
@@ -147,8 +148,6 @@ class SendPendingInvoices extends BaseCommand
                     'software_id' => $softwareID,
                     'software_pin' => $pin,
                     'test_set_id' => $config['col_electronic_test'] ? $config['col_electronic_test_set_id'] : '',
-                    //'emitter_document_number' => substr($config['tax_id'], 0, -2),
-                    //'customer_document_number' => $data['customer_tax_id'] ?? '222222222222',
                     'supplier' => [
                         'name'                  => $config['company'],
                         'tax_id'                => substr($config['tax_id'], 0, -2),
@@ -184,11 +183,11 @@ class SendPendingInvoices extends BaseCommand
                         'phone'                 => $data['customer_phone'] ?? '0000000',
                         'email'                 => $data['customer_email'] ?? $config['email'] ?? 'noemail@noemail.com',
                         'address'               => [
-                            'id'                   => !empty($data['customer_city_code']) ? $data['customer_city_code'] : (!empty($config['col_city_code']) ? $config['col_city_code'] : '05615'),
+                            'id'                   => get_dian_city_code($data['customer_state'] ?? '', $data['customer_city'] ?? ''),
                             'city_name'            => !empty($data['customer_city']) ? $data['customer_city'] : (!empty($config['city']) ? $config['city'] : 'Rionegro'),
                             'postal_zone'          => !empty($data['customer_postal_zone']) ? $data['customer_postal_zone'] : (!empty($config['col_postal_zone']) ? $config['col_postal_zone'] : ''),
                             'country_subentity'    => !empty($data['customer_state']) ? $data['customer_state'] : (!empty($config['state']) ? $config['state'] : 'Antioquia'),
-                            'country_subentity_code'=> !empty($data['customer_state_code']) ? $data['customer_state_code'] : (!empty($config['col_state_code']) ? $config['col_state_code'] : '05'),
+                            'country_subentity_code'=> get_dian_state_code($data['customer_state'] ?? ''),
                             'address_line'         => !empty($data['customer_address']) ? $data['customer_address'] : (!empty($config['address']) ? $config['address'] : ''),
                             'country_code'         => 'CO',
                             'country_name'         => 'Colombia',
@@ -221,8 +220,10 @@ class SendPendingInvoices extends BaseCommand
                         $color = ($result['success'] ?? false) ? 'green' : 'red';
                         $prefix = ($result['success'] ?? false) ? '✅' : '❌';
                         CLI::write("$prefix DIAN Status: [{$result['status_code']}] {$result['status_description']}", $color);
+                        log_message('info', "DIAN: Invoice for Sale ID {$entry['sale_id']} status: {$result['status_description']}");
                     } else {
                         CLI::write("✅ Factura enviada a la DIAN.", "green");
+                        log_message('info', "DIAN: Invoice for Sale ID {$entry['sale_id']} successfully sent.");
                     }
                     $dianStatus = DianResponseProcessor::processAndUpdateSoapResponse($entry['id'], $result['response'], $xmlGenerated, $xmlSigned);
 
@@ -232,12 +233,14 @@ class SendPendingInvoices extends BaseCommand
                 } else {
                     $errorMsg = $result['error'] ?? 'Error desconocido';
                     CLI::error("❌ Fallo en el envío: " . $errorMsg);
+                    log_message('error', "DIAN Error (Sale ID {$entry['sale_id']}): " . $errorMsg);
                     DianResponseProcessor::processError($entry['id'], $errorMsg, $xmlGenerated, $xmlSigned);
                 }
             } catch (\Throwable $e) {
                DianResponseProcessor::processError($entry['id'], $e->getMessage(), $xmlGenerated ?? null, $xmlSigned ?? null);
                 CLI::error("❌ Error en sale_id {$entry['sale_id']}: {$e->getMessage()}");
-                CLI::error("❌ Stac ktrace: {$e->getTraceAsString()}");
+                log_message('error', "DIAN critical exception for sale_id {$entry['sale_id']}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+                CLI::error("❌ Stacktrace: {$e->getTraceAsString()}");
             }
         }
 

@@ -43,7 +43,8 @@ class SendingAdditionalDocuments extends BaseCommand
                 'from' => $config['col_electronic_range_min'],
                 'to' => $config['col_electronic_range_max'],
                 'prefix' => $config['col_electronic_prefix']
-            ]
+            ],
+            'output_path' => WRITEPATH . 'dian_xmls'
         ];
 
         try {
