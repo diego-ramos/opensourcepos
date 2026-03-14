@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5220606a82e6b112e33b52d986856af0",
+    "content-hash": "d6a564a9ab331202901a59770291983a",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -311,16 +311,23 @@
         {
             "name": "diego-ramos/dian-facturacion",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:diego-ramos/dian-facturacion-php.git",
+                "reference": "bb88a8b8dfd72b3c4a61a24920b53e568702d581"
+            },
             "dist": {
-                "type": "path",
-                "url": "c:/Users/diego/Documents/Open_POS/dian-facturacion-php",
-                "reference": "ffeff549ccb0914e0c165a0ee22efb0d9be32b0e"
+                "type": "zip",
+                "url": "https://api.github.com/repos/diego-ramos/dian-facturacion-php/zipball/bb88a8b8dfd72b3c4a61a24920b53e568702d581",
+                "reference": "bb88a8b8dfd72b3c4a61a24920b53e568702d581",
+                "shasum": ""
             },
             "require": {
                 "ext-openssl": "*",
                 "php": ">=8.2",
                 "robrichards/xmlseclibs": "^3.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -331,10 +338,11 @@
                 "Apache-2.0"
             ],
             "description": "Módulo PHP para enviar facturas electrónicas a la DIAN (Colombia) usando software propio",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "source": "https://github.com/diego-ramos/dian-facturacion-php/tree/main",
+                "issues": "https://github.com/diego-ramos/dian-facturacion-php/issues"
+            },
+            "time": "2026-03-13T17:58:31+00:00"
         },
         {
             "name": "dompdf/dompdf",
@@ -525,8 +533,14 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/diego-ramos/ubl21dian.git",
-                "reference": "1c84ab64f3feef0fcc2c84b120906450bfbf8c3d"
+                "url": "https://github.com/lopezsoft/ubl21dian.git",
+                "reference": "dd5f9382deff87e3555f34ce64eb3a6c7cbc493b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lopezsoft/ubl21dian/zipball/dd5f9382deff87e3555f34ce64eb3a6c7cbc493b",
+                "reference": "dd5f9382deff87e3555f34ce64eb3a6c7cbc493b",
+                "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
@@ -549,11 +563,7 @@
                     "Lopezsoft\\UBL21dian\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Lopezsoft\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -578,7 +588,7 @@
                 "issues": "https://github.com/lopezsoft/ubl21dian/issues",
                 "source": "https://github.com/lopezsoft/ubl21dian"
             },
-            "time": "2025-07-30T13:53:12+00:00"
+            "time": "2026-02-24T11:57:43+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -1033,16 +1043,16 @@
         },
         {
             "name": "robrichards/xmlseclibs",
-            "version": "3.1.4",
+            "version": "3.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/robrichards/xmlseclibs.git",
-                "reference": "bc87389224c6de95802b505e5265b0ec2c5bcdbd"
+                "reference": "03062be78178cbb5e8f605cd255dc32a14981f92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/bc87389224c6de95802b505e5265b0ec2c5bcdbd",
-                "reference": "bc87389224c6de95802b505e5265b0ec2c5bcdbd",
+                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/03062be78178cbb5e8f605cd255dc32a14981f92",
+                "reference": "03062be78178cbb5e8f605cd255dc32a14981f92",
                 "shasum": ""
             },
             "require": {
@@ -1069,9 +1079,9 @@
             ],
             "support": {
                 "issues": "https://github.com/robrichards/xmlseclibs/issues",
-                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.4"
+                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.5"
             },
-            "time": "2025-12-08T11:57:53+00:00"
+            "time": "2026-03-13T10:31:56+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",

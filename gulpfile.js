@@ -37,6 +37,28 @@ gulp.task('compress', function () {
     return gulp.src(sources, { allowEmpty: true, encoding: false }).pipe(zip('opensourcepos.zip')).pipe(gulp.dest('dist'));
 });
 
+gulp.task('package-uncompressed', function () {
+    const sources = [
+        'app*/**/*', 
+        'public*/**/*', 
+        '*.md', 
+        'LICENSE', 
+        'docker*', 
+        'Dockerfile', 
+        '.htaccess', 
+        'app*/**/.htaccess', 
+        'public*/**/.htaccess', 
+        'writable*/**/.htaccess', 
+        'writable*/**/*', 
+        '!writable/logs/*.log', 
+        '!writable/debugbar/*.json', 
+        '.env.example', 
+        'composer.json', 
+        'composer.lock'
+    ];
+    return gulp.src(sources, { allowEmpty: true, encoding: false }).pipe(gulp.dest('dist/deployment'));
+});
+
 
 gulp.task('update-licenses', function () {
     run('composer licenses --format=json --no-dev > public/license/composer.LICENSES').exec();
