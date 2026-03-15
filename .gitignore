@@ -124,3 +124,12 @@ real_invoice/07bec45e406c006c81f856ada1c2cf4492ded2ac0539b56b71187d99f0905d921a0
 real_invoice/07bec45e406c006c81f856ada1c2cf4492ded2ac0539b56b71187d99f0905d921a0cda892748f3718eb88184ff000bb0_nosign.xml
 test_xml_gen.php
 writable/
+check_status.php
+dian_error.txt
+get_error.php
+out.txt
+output_log.txt
+reset_status.php
+test_cert.pem
+test_key.pem
+test_signer.php
