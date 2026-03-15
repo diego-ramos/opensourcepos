@@ -40,6 +40,19 @@
                         ) ?>
                     </div>
                 </div>
+
+                <div class="form-group form-group-sm">
+                    <?= form_label(lang('Config.tax_level_code'), 'tax_level_code', ['class' => 'required control-label col-xs-2']) ?>
+                    <div class="col-xs-3">
+                        <?= form_multiselect(
+                            'tax_level_code[]',
+                            $tax_responsibility_options,
+                            $config['tax_level_code'] ?? ['R-99-PN'],
+                            ['id' => 'tax_level_code', 'class' => 'form-control input-sm', 'size' => 5]
+                        ) ?>
+                        <span class="help-block">Si selecciona <b>R-99-PN</b> no podrá seleccionar otros valores.</span>
+                    </div>
+                </div>
             <?php endif; ?>
 
             <div class="form-group form-group-sm">
@@ -174,6 +187,14 @@
 
         $("#use_destination_based_tax").change(enable_disable_use_destination_based_tax);
 
+        $('#tax_level_code').on('change', function() {
+            var selected = $(this).val();
+            if (selected && selected.length > 1) {
+                if (selected.indexOf('R-99-PN') !== -1) {
+                    $(this).val(['R-99-PN']);
+                }
+            }
+        });
 
         $('#tax_config_form').validate($.extend(form_support.handler, {
             submitHandler: function(form) {

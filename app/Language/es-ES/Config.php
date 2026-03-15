@@ -329,6 +329,7 @@ return [
     "user_timezone"                             => "Zona Horaria OSPOS:",
     "website"                                   => "Sitio Web",
     "wholesale_markup"                          => "Marcado al por mayor",
+    "tax_level_code"                            => "Responsabilidad Fiscal",
     "work_order_enable"                         => "Soporte Ordenes de Trabajo",
     "work_order_format"                         => "Formato Ordenes de trabajo",
 ];

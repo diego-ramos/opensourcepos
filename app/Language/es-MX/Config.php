@@ -316,6 +316,7 @@ return [
     "tax_decimals"                              => "Tax Decimals",
     "tax_id"                                    => "Tax Id",
     "tax_included"                              => "Tax Included",
+    "tax_level_code"                            => "Responsabilidad Fiscal",
     "theme"                                     => "Theme",
     "theme_preview"                             => "Vista Previa del Tema:",
     "thousands_separator"                       => "Thousands Separator",

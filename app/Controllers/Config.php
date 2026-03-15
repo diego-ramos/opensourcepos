@@ -239,6 +239,11 @@ class Config extends Secure_Controller
         $data['dbVersion'] = mysqli_get_server_info($this->db->getConnection());
         $data['tax_id_types'] = $this->tax_id_type->get_all()->getResultArray();
         $data['active_tax_id_types'] = $this->getActiveTaxIdTypes();
+        
+        helper('dian');
+        $data['tax_responsibility_options'] = get_tax_responsibility_options();
+        $data['config'] = $this->config;
+        $data['config']['tax_level_code'] = explode(';', $this->config['tax_level_code'] ?? 'R-99-PN');
 
         // Load all the license statements, they are already XSS cleaned in the private function
         $data['licenses'] = $this->_licenses();
@@ -903,7 +908,8 @@ class Config extends Secure_Controller
             'default_tax_category'      => $this->request->getPost('default_tax_category'),
             'default_tax_jurisdiction'  => $this->request->getPost('default_tax_jurisdiction'),
             'tax_id'                    => $this->request->getPost('tax_id', FILTER_SANITIZE_NUMBER_INT),
-            'tax_id_type'               => $this->request->getPost('tax_id_type', FILTER_SANITIZE_NUMBER_INT)
+            'tax_id_type'               => $this->request->getPost('tax_id_type', FILTER_SANITIZE_NUMBER_INT),
+            'tax_level_code'            => is_array($this->request->getPost('tax_level_code')) ? implode(';', $this->request->getPost('tax_level_code')) : ($this->request->getPost('tax_level_code') ?? 'R-99-PN')
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);

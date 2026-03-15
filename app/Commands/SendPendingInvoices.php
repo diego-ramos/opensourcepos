@@ -155,7 +155,7 @@ class SendPendingInvoices extends BaseCommand
                         'document_type'         => $tax_lib->get_tax_id_type_code($config['tax_id_type']) ?? '31',
                         'additional_account_id' => '2',
                         'industry_code'         => $config['col_ciiu_code'] ?? '',
-                        'tax_level_code'        => $config['col_tax_level_code'] ?? 'R-99-PN',
+                        'tax_level_code'        => $config['tax_level_code'] ?? 'R-99-PN',
                         'tax_scheme_id'         => '01',
                         'tax_scheme_name'       => 'IVA',
                         'phone'                 => $config['phone'] ?? '',

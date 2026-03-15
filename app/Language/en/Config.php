@@ -341,6 +341,7 @@ return [
     "user_timezone"                             => "Local Timezone:",
     "website"                                   => "Website",
     "wholesale_markup"                          => "",
+    "tax_level_code"                            => "Tax Responsibility",
     "work_order_enable"                         => "Work Order Support",
     "work_order_format"                         => "Work Order Format",
 ];
