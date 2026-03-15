@@ -9,7 +9,7 @@
 <div class="panel panel-default">
     
     <div class="panel-body">
-        <?= form_open('config/saveColombiaElectronicInvoice/', ['id' => 'tax_id_types_config_form', 'class' => 'form-horizontal']) ?>
+        <?= form_open('config/saveColombiaElectronicInvoice/', ['id' => 'tax_id_types_config_form', 'enctype' => 'multipart/form-data', 'class' => 'form-horizontal']) ?>
         
             <div class="form-group form-group-sm">
                 <?= form_label(lang('Config.col_electronic_invoice_enable'), 'col_electronic_invoice_enable', ['class' => 'control-label col-xs-2']) ?>
@@ -88,10 +88,13 @@
         $('#tax_id_types_config_form').on('submit', function(e) {
             e.preventDefault();
             var $form = $(this);
+            var formData = new FormData(this);
             $.ajax({
                 url: $form.attr('action'),
                 type: 'POST',
-                data: $form.serialize(),
+                data: formData,
+                processData: false,
+                contentType: false,
                 dataType: 'json',
                 success: function(response) {
                     if ($.notify) {

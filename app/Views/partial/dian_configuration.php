@@ -70,23 +70,30 @@
     <?= form_label(lang('Config.col_electronic_invoice_cert_key_path'), 'col_electronic_invoice_cert_key_path', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
-            'name'  => 'col_electronic_invoice_cert_key_path',
-            'id'    => 'col_electronic_invoice_cert_key_path',
+            'name'  => 'col_electronic_invoice_cert_key_path_display',
+            'id'    => 'col_electronic_invoice_cert_key_path_display',
             'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_invoice_cert_key_path'] ?? '',
+            'value' => !empty($config['col_electronic_invoice_cert_key_path']) ? basename($config['col_electronic_invoice_cert_key_path']) : '',
+            'readonly' => 'readonly'
         ]) ?>
+    </div>
+    <div class="col-xs-4">
+        <input type="file" name="cert_key_file" id="cert_key_file">
     </div>
 </div>
 <div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_invoice_cert_crt_path'), 'col_electronic_invoice_cert_crt_path', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
-            'name'  => 'col_electronic_invoice_cert_crt_path',
-            'id'    => 'col_electronic_invoice_cert_crt_path',
+            'name'  => 'col_electronic_invoice_cert_crt_path_display',
+            'id'    => 'col_electronic_invoice_cert_crt_path_display',
             'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_invoice_cert_crt_path'] ?? '',
-            'required' => true
+            'value' => !empty($config['col_electronic_invoice_cert_crt_path']) ? basename($config['col_electronic_invoice_cert_crt_path']) : '',
+            'readonly' => 'readonly'
         ]) ?>
+    </div>
+    <div class="col-xs-4">
+        <input type="file" name="cert_crt_file" id="cert_crt_file">
     </div>
 </div>
 <div class="form-group form-group-sm">

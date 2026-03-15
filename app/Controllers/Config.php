@@ -360,6 +360,32 @@ class Config extends Secure_Controller
     }
 
     /**
+     * @param string $field_name
+     * @return array
+     */
+    private function upload_certificate(string $field_name): array
+    {
+        $file = $this->request->getFile($field_name);
+        if (!$file || !$file->isValid()) {
+            return [];
+        }
+
+        $filename = $file->getClientName();
+        $info = pathinfo($filename);
+
+        $file_info = [
+            'orig_name' => $filename,
+            'raw_name'  => $info['filename'],
+            'file_ext'  => $info['extension'] ?? ''
+        ];
+
+        $target_name = $file_info['raw_name'] . (!empty($file_info['file_ext']) ? '.' . $file_info['file_ext'] : '');
+        $file->move(FCPATH . 'uploads/', $target_name, true);
+
+        return ['full_path' => FCPATH . 'uploads/' . $target_name];
+    }
+
+    /**
      * Saves general configuration. Used in app/Views/configs/general_config.php
      *
      * @throws ReflectionException
@@ -796,8 +822,20 @@ class Config extends Secure_Controller
             $dian_config['col_electronic_invoice_wsdl'] = $this->request->getPost('col_electronic_invoice_wsdl') ?? '';
             $dian_config['col_electronic_invoice_endpoint'] = $this->request->getPost('col_electronic_invoice_endpoint') ?? '';
             $dian_config['col_electronic_invoice_cert_password'] = $this->request->getPost('col_electronic_invoice_cert_password') ?? '';
-            $dian_config['col_electronic_invoice_cert_key_path'] = $this->request->getPost('col_electronic_invoice_cert_key_path') ?? '';
-            $dian_config['col_electronic_invoice_cert_crt_path'] = $this->request->getPost('col_electronic_invoice_cert_crt_path') ?? '';
+            
+            // Keep existing paths if no new file is uploaded
+            $dian_config['col_electronic_invoice_cert_key_path'] = $this->config['col_electronic_invoice_cert_key_path'] ?? '';
+            $dian_config['col_electronic_invoice_cert_crt_path'] = $this->config['col_electronic_invoice_cert_crt_path'] ?? '';
+
+            $key_upload = $this->upload_certificate('cert_key_file');
+            if (!empty($key_upload)) {
+                $dian_config['col_electronic_invoice_cert_key_path'] = $key_upload['full_path'];
+            }
+
+            $crt_upload = $this->upload_certificate('cert_crt_file');
+            if (!empty($crt_upload)) {
+                $dian_config['col_electronic_invoice_cert_crt_path'] = $crt_upload['full_path'];
+            }
             $dian_config['col_electronic_range_min'] = $this->request->getPost('col_electronic_range_min') ?? '';
             $dian_config['col_electronic_range_max'] = $this->request->getPost('col_electronic_range_max') ?? '';
             $dian_config['col_electronic_range_resolution'] = $this->request->getPost('col_electronic_range_resolution') ?? '';

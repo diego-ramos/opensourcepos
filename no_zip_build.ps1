@@ -4,7 +4,7 @@
 # ------------------------------------------------------
 # This script executes the following steps:
 # 1. Frontend Assets (NPM/Gulp)
-# 2. Deployment Package (Gulp package-uncompressed)
+# 2. Deployment Package (Gulp package-uncompressed)y
 #
 # NOTE: It does not run `composer install` and does not include
 # the `vendor` directory, as that is expected to run on the server.

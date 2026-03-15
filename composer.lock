@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ddadf146f986d27a80f10ab3a42d05f",
+    "content-hash": "4845d636adc3b20ed5d5fb81e2205c37",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -311,16 +311,23 @@
         {
             "name": "diego-ramos/dian-facturacion",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:diego-ramos/dian-facturacion-php.git",
+                "reference": "b729508cd6a0240c70cb90011c5c586737f8437e"
+            },
             "dist": {
-                "type": "path",
-                "url": "c:/Users/diego/Documents/Open_POS/dian-facturacion-php",
-                "reference": "3149b8d7a4b0f972ba89fbed7684223ec50fb63a"
+                "type": "zip",
+                "url": "https://api.github.com/repos/diego-ramos/dian-facturacion-php/zipball/b729508cd6a0240c70cb90011c5c586737f8437e",
+                "reference": "b729508cd6a0240c70cb90011c5c586737f8437e",
+                "shasum": ""
             },
             "require": {
                 "ext-openssl": "*",
                 "php": ">=8.1",
                 "robrichards/xmlseclibs": "3.1.5"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -331,10 +338,11 @@
                 "Apache-2.0"
             ],
             "description": "Módulo PHP para enviar facturas electrónicas a la DIAN (Colombia) usando software propio",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "source": "https://github.com/diego-ramos/dian-facturacion-php/tree/main",
+                "issues": "https://github.com/diego-ramos/dian-facturacion-php/issues"
+            },
+            "time": "2026-03-15T20:56:40+00:00"
         },
         {
             "name": "dompdf/dompdf",
