@@ -221,14 +221,15 @@ class SendPendingInvoices extends BaseCommand
                         $prefix = ($result['success'] ?? false) ? '✅' : '❌';
                         CLI::write("$prefix DIAN Status: [{$result['status_code']}] {$result['status_description']}", $color);
                         log_message('info', "DIAN: Invoice for Sale ID {$entry['sale_id']} status: {$result['status_description']}");
+                        $dianStatus = DianResponseProcessor::processAndUpdateSoapResponse($entry['id'], $result['response'], $xmlGenerated, $xmlSigned);
+                        if ($dianStatus === 'accepted') {
+                            $this->sendInvoiceByEmail($data, $result['signedXml']);
+                        }
                     } else {
-                        CLI::write("✅ Factura enviada a la DIAN.", "green");
-                        log_message('info', "DIAN: Invoice for Sale ID {$entry['sale_id']} successfully sent.");
-                    }
-                    $dianStatus = DianResponseProcessor::processAndUpdateSoapResponse($entry['id'], $result['response'], $xmlGenerated, $xmlSigned);
-
-                    if ($dianStatus === 'accepted') {
-                        $this->sendInvoiceByEmail($data, $result['signedXml']);
+                        $errorMsg = $result['error'] ?? 'Error desconocido';
+                        CLI::error("❌ Fallo en el envío: " . $errorMsg);
+                        log_message('error', "DIAN Error (Sale ID {$entry['sale_id']}): " . $errorMsg);
+                        DianResponseProcessor::processError($entry['id'], $errorMsg, $xmlGenerated, $xmlSigned);
                     }
                 } else {
                     $errorMsg = $result['error'] ?? 'Error desconocido';

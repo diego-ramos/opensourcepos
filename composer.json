@@ -32,12 +32,15 @@
 	},
 	"repositories": [
 		{
-			"type": "vcs",
-			"url": "https://github.com/diego-ramos/dian-facturacion-php.git"
+			"type": "path",
+			"url": "c:/Users/diego/Documents/Open_POS/dian-facturacion-php",
+			"options": {
+				"symlink": true
+			}
 		}
 	],
 	"require": {
-		"php": "^8.2",
+		"php": "^8.1",
 		"ext-intl": "*",
 		"chillerlan/php-qrcode": "^5.0",
 		"codeigniter4/framework": "^4.6.3",
