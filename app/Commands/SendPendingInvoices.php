@@ -215,6 +215,12 @@ class SendPendingInvoices extends BaseCommand
                 $xmlGenerated = $result['xml'] ?? null;
                 $xmlSigned = $result['signedXml'] ?? null;
 
+                if (!empty($invoiceData['test_set_id'])) {
+                    CLI::write("🚀 Enviando a la DIAN en modo de prueba...: ". $result['cufe']);
+                    CLI::write("XML: " . $result['response']);
+                    CLI::write("---------------------------------------------------");
+                }
+
                 if (is_array($result) && isset($result['response'])) {
                     if (isset($result['status_description'])) {
                         $color = ($result['success'] ?? false) ? 'green' : 'red';

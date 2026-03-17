@@ -207,7 +207,6 @@
             'id'    => 'col_electronic_test_set_id',
             'class' => 'form-control input-sm',
             'value' => $config['col_electronic_test_set_id'] ?? '',
-            'required' => true
         ]) ?>
     </div>
 </div>

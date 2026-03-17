@@ -385,9 +385,9 @@ class Config extends Secure_Controller
         ];
 
         $target_name = $file_info['raw_name'] . (!empty($file_info['file_ext']) ? '.' . $file_info['file_ext'] : '');
-        $file->move(FCPATH . 'uploads/', $target_name, true);
+        $file->move(WRITEPATH . 'certificates/', $target_name, true);
 
-        return ['full_path' => FCPATH . 'uploads/' . $target_name];
+        return ['full_path' => WRITEPATH . 'certificates/' . $target_name];
     }
 
     /**

@@ -314,12 +314,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:diego-ramos/dian-facturacion-php.git",
-                "reference": "b729508cd6a0240c70cb90011c5c586737f8437e"
+                "reference": "0f320d719dda126824e3a9f3b1e44e224b6f1dca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/diego-ramos/dian-facturacion-php/zipball/b729508cd6a0240c70cb90011c5c586737f8437e",
-                "reference": "b729508cd6a0240c70cb90011c5c586737f8437e",
+                "url": "https://api.github.com/repos/diego-ramos/dian-facturacion-php/zipball/0f320d719dda126824e3a9f3b1e44e224b6f1dca",
+                "reference": "0f320d719dda126824e3a9f3b1e44e224b6f1dca",
                 "shasum": ""
             },
             "require": {
@@ -342,7 +342,7 @@
                 "source": "https://github.com/diego-ramos/dian-facturacion-php/tree/main",
                 "issues": "https://github.com/diego-ramos/dian-facturacion-php/issues"
             },
-            "time": "2026-03-15T20:56:40+00:00"
+            "time": "2026-03-17T16:53:26+00:00"
         },
         {
             "name": "dompdf/dompdf",
