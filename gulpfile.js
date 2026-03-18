@@ -39,21 +39,23 @@ gulp.task('compress', function () {
 
 gulp.task('package-uncompressed', function () {
     const sources = [
-        'app*/**/*', 
-        'public*/**/*', 
-        '*.md', 
-        'LICENSE', 
-        'docker*', 
-        'Dockerfile', 
-        '.htaccess', 
-        'app*/**/.htaccess', 
-        'public*/**/.htaccess', 
-        'writable*/**/.htaccess', 
-        'writable*/**/*', 
-        '!writable/logs/*.log', 
-        '!writable/debugbar/*.json', 
-        '.env.example', 
-        'composer.json', 
+        'app*/**/*',
+        'public*/**/*',
+        '*.md',
+        'LICENSE',
+        'docker*',
+        'Dockerfile',
+        '.htaccess',
+        'app*/**/.htaccess',
+        'public*/**/.htaccess',
+        'writable*/**/.htaccess',
+        'writable*/**/*',
+        '!writable/logs/*.log',
+        '!writable/debugbar/*.json',
+        '!writable/dian_xmls/*.xml',
+        '!writable/certificates/*.pfx',
+        '.env.example',
+        'composer.json',
         'composer.lock'
     ];
     return gulp.src(sources, { allowEmpty: true, encoding: false }).pipe(gulp.dest('dist/deployment'));
