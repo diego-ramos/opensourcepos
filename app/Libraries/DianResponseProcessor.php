@@ -104,7 +104,7 @@ class DianResponseProcessor
 
         (new InvoiceDianQueue())->update($queueId, $dataToUpdate);
 
-        return $dataToUpdate['status'];
+        return $dataToUpdate['dian_status'];
     }
 
     public static function processError(int $queueId, string $errorMessage, ?string $xmlGenerated = null, ?string $xmlSigned = null): bool

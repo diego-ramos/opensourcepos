@@ -14,6 +14,7 @@ use DianFE\DianFE;
 use DateTime;
 use DateTimeZone;
 use App\Events\Load_config;
+use App\Models\Employee;
 
 class SendPendingInvoices extends BaseCommand
 {
@@ -43,8 +44,21 @@ class SendPendingInvoices extends BaseCommand
 
         CLI::write('📤 Sending ' . count($pending) . ' pending invoice(s) to DIAN...', 'yellow');
 
-        helper('sale');
-        helper('dian');
+        helper(['sale', 'dian', 'locale']);
+        
+        $employee_model = model(Employee::class);
+        $logged_in_employee_info = $employee_model->get_info(1); // Default to admin for CLI
+
+        // Load up global global_view_data visible to all the loaded views
+        $global_view_data = [
+            'user_info'       => $logged_in_employee_info,
+            'controller_name' => 'sales',
+            'config'          => $config
+        ];
+        
+        // This view allows view-accessible data across multiple views since $this->load->vars() does not exist in CI4
+        // calling it here populates the renderer with global data, and saveData => true ensures it persists
+        view('viewData', $global_view_data, ['saveData' => true]);
 
         $dianConfig = [
             'cert_path' => $config['col_electronic_invoice_cert_crt_path'],
@@ -139,7 +153,7 @@ class SendPendingInvoices extends BaseCommand
 
                 $invoiceData = [
                     'invoice_env' => $config['col_electronic_test'] ? 'development' :'production',
-                    'invoice_number' => $config['col_electronic_prefix'].$data['invoice_number'],
+                    'invoice_number' => $data['invoice_number'],
                     'resolution_prefix' =>  $config['col_electronic_prefix'],
                     'issue_date' =>  $issueDate,
                     'issue_time' => $issueTime,

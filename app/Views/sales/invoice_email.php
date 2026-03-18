@@ -27,7 +27,13 @@
 <head>
     <meta charset="utf-8">
     <title><?= lang('Sales.email_receipt') ?></title>
+<?php if (is_cli()): ?>
+    <style>
+        <?= file_get_contents(FCPATH . 'css/invoice_email.css') ?>
+    </style>
+<?php else: ?>
     <link rel="stylesheet" href="<?= base_url('css/invoice_email.css') ?>">
+<?php endif; ?>
 </head>
 
 <body>

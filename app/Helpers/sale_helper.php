@@ -18,6 +18,7 @@ use App\Models\Tokens\Token_invoice_sequence;
 use Config\Services;
 use App\Libraries\Email_lib;
 use App\Libraries\Token_lib;
+use function PHPUnit\Framework\isNan;
 
 /**
  * Get sale data for invoice/receipt.
@@ -148,7 +149,10 @@ function load_dian_data(int $sale_id, array &$data)
     }
     
     $data['cufe'] = $queue_info['dian_cufe'];
-
+    if($config['col_electronic_invoice_enable'] && is_numeric($data['invoice_number'])) {
+        $data['invoice_number'] = $config['col_electronic_prefix'] .$data['invoice_number'];
+    }
+    
     $qr_text =
     "NumFac=".$sale_id."\n".
     "FecFac=".$data['transaction_date']."\n".
