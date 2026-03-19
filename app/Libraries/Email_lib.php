@@ -64,7 +64,7 @@ class Email_lib
     {
         $email = $this->email;
 
-        $email->setFrom($this->config['email'], $this->config['company']);
+        $email->setFrom($this->config['smtp_user'], $this->config['company']);
         $email->setTo($to);
         $email->setSubject($subject);
         $email->setMessage($message);
