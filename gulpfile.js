@@ -56,7 +56,8 @@ gulp.task('package-uncompressed', function () {
         '!writable/certificates/*.pfx',
         '.env.example',
         'composer.json',
-        'composer.lock'
+        'composer.lock',
+        'spark'
     ];
     return gulp.src(sources, { allowEmpty: true, encoding: false }).pipe(gulp.dest('dist/deployment'));
 });
