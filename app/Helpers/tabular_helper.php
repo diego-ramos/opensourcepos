@@ -914,6 +914,46 @@ function get_cash_up_data_row(object $cash_up): array
 }
 
 /**
+ * Cash In/Out headers
+ */
+function cash_in_out_headers(): array
+{
+    return [
+        ['cash_session_id' => lang('Common.id')],
+        ['employee'        => lang('Cash_in_out.employee')],
+        ['open_date'       => lang('Cash_in_out.open_date')],
+        ['open_amount'     => lang('Cash_in_out.open_amount')],
+        ['close_date'      => lang('Cash_in_out.close_date')],
+        ['close_amount'    => lang('Cash_in_out.close_amount')],
+        ['status'          => lang('Cash_in_out.status')]
+    ];
+}
+
+/**
+ * Get the header for the cash in out tabular view
+ */
+function get_cash_in_out_manage_table_headers(): string
+{
+    return transform_headers_readonly(array_merge(...cash_in_out_headers()));
+}
+
+/**
+ * Get the html data row for the cash in out
+ */
+function get_cash_in_out_data_row(object $session): array
+{
+    return [
+        'cash_session_id' => $session->cash_session_id,
+        'employee'        => "$session->first_name $session->last_name",
+        'open_date'       => to_datetime(strtotime($session->open_date)),
+        'open_amount'     => to_currency($session->open_amount),
+        'close_date'      => $session->close_date ? to_datetime(strtotime($session->close_date)) : '-',
+        'close_amount'    => $session->close_amount ? to_currency($session->close_amount) : '-',
+        'status'          => $session->close_date ? lang('Cash_in_out.closed') : lang('Cash_in_out.open')
+    ];
+}
+
+/**
  * Returns the right-most part of the controller name
  * @return string
  */

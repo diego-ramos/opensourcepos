@@ -114,6 +114,36 @@ $request = Services::request();
                 </div>
 
                 <div class="navbar-right" style="margin: 0;">
+                    <?php 
+                        $has_cash_grant = false;
+                        foreach($allowed_modules as $module) {
+                            if ($module->module_id == 'cash_in_out') {
+                                $has_cash_grant = true;
+                                break;
+                            }
+                        }
+                        if ($has_cash_grant): 
+                    ?>
+                        <a id="cash_in_out_button" class="btn btn-xs btn-primary modal-dlg" data-href="<?= site_url('cash_in_out/view') ?>" data-btn-submit="<?= lang('Common.submit') ?>" title="<?= lang('Cash_in_out.cash_in') ?>" style="display: none; margin-right: 10px; margin-top: -3px;">
+                            <span class="glyphicon glyphicon-usd"></span> <span id="cash_in_out_text"></span>
+                        </a>
+                        <script type="text/javascript">
+                            function refresh_cash_button() {
+                                $.getJSON('<?= site_url('cash_in_out/check_session') ?>', function(response) {
+                                    if (response.has_active) {
+                                        $('#cash_in_out_text').text('<?= lang('Cash_in_out.cash_out') ?>');
+                                        $('#cash_in_out_button').attr('title', '<?= lang('Cash_in_out.cash_out') ?>').show();
+                                    } else {
+                                        $('#cash_in_out_text').text('<?= lang('Cash_in_out.cash_in') ?>');
+                                        $('#cash_in_out_button').attr('title', '<?= lang('Cash_in_out.cash_in') ?>').show();
+                                    }
+                                });
+                            }
+                            $(document).ready(function() {
+                                refresh_cash_button();
+                            });
+                        </script>
+                    <?php endif; ?>
                     <?= anchor("home/changePassword/$user_info->person_id", "$user_info->first_name $user_info->last_name", ['class' => 'modal-dlg', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Employees.change_password')]) ?>
                     <span>&nbsp;|&nbsp;</span>
                     <?= anchor('home/logout', lang('Login.logout')) ?>
