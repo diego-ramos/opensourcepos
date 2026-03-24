@@ -307,7 +307,7 @@ class Sales extends Secure_Controller
      */
     public function postSetComment(): void
     {
-        $this->sale_lib->set_comment($this->request->getPost('comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        $this->sale_lib->set_comment($this->request->getPost('comment'));
     }
 
     /**
@@ -374,7 +374,7 @@ class Sales extends Secure_Controller
     {
         $data = [];
         $giftcard = model(Giftcard::class);
-        $payment_type = $this->request->getPost('payment_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $payment_type = $this->request->getPost('payment_type');
 
         if ($payment_type !== lang('Sales.giftcard')) {
             $rules = ['amount_tendered' => 'trim|required|decimal_locale',];
@@ -572,7 +572,7 @@ class Sales extends Secure_Controller
         ];
 
         if ($this->validate($rules)) {
-            $description = $this->request->getPost('description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $description = $this->request->getPost('description');
             $serialnumber = $this->request->getPost('serialnumber', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $price = parse_decimals($this->request->getPost('price'));
             $quantity = parse_decimals($this->request->getPost('quantity'));
