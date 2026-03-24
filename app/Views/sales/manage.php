@@ -93,3 +93,48 @@
 </div>
 
 <?= view('partial/footer') ?>
+
+<div id="dian_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">DIAN Invoice Status Detail</h4>
+            </div>
+            <div class="modal-body">
+                <p><strong>Invoice: </strong><span id="dian_invoice"></span></p>
+                <p><strong>Status: </strong><span id="dian_status_text"></span></p>
+                <p><strong>CUFE: </strong><span id="dian_cufe_text" style="word-break: break-all;"></span></p>
+                <div id="dian_error_container" style="display: none;">
+                    <p><strong>Error Message: </strong><span id="dian_error_text" class="text-danger"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).on('click', '.dian-modal', function(e) {
+        e.preventDefault();
+        var status = $(this).data('status');
+        var cufe = $(this).data('cufe');
+        var error = $(this).data('error');
+        var invoice = $(this).data('invoice');
+
+        $('#dian_invoice').text(invoice);
+        $('#dian_status_text').text(status);
+        $('#dian_cufe_text').text(cufe || 'N/A');
+
+        if (status === 'error' && error) {
+            $('#dian_error_text').text(error);
+            $('#dian_error_container').show();
+        } else {
+            $('#dian_error_container').hide();
+        }
+
+        $('#dian_modal').modal('show');
+    });
+</script>

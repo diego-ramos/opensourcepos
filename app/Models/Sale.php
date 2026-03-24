@@ -62,6 +62,9 @@ class Sale extends Model
                 MAX(sales.comment) AS comment,
                 MAX(sales.sale_status) AS sale_status,
                 MAX(sales.invoice_number) AS invoice_number,
+                MAX(dian.status) AS dian_status,
+                MAX(dian.dian_cufe) AS dian_cufe,
+                MAX(dian.error_message) AS dian_error_message,
                 MAX(sales.quote_number) AS quote_number,
                 MAX(sales.employee_id) AS employee_id,
                 MAX(sales.customer_id) AS customer_id,
@@ -83,6 +86,7 @@ class Sale extends Model
         $builder->select($sql);
 
         $builder->join('sales AS sales', 'sales_items.sale_id = sales.sale_id', 'inner');
+        $builder->join('invoices_dian_queue AS dian', 'sales.sale_id = dian.sale_id', 'left');
         $builder->join('people AS customer_p', 'sales.customer_id = customer_p.person_id', 'LEFT');
         $builder->join('customers AS customer', 'sales.customer_id = customer.person_id', 'LEFT');
         $builder->join('sales_payments_temp AS payments', 'sales.sale_id = payments.sale_id', 'LEFT OUTER');
@@ -159,6 +163,9 @@ class Sale extends Model
                 'MAX(DATE(`' . $db_prefix . 'sales`.`sale_time`)) AS sale_date',
                 'MAX(`' . $db_prefix . 'sales`.`sale_time`) AS sale_time',
                 'MAX(`' . $db_prefix . 'sales`.`invoice_number`) AS invoice_number',
+                'MAX(`dian`.`status`) AS dian_status',
+                'MAX(`dian`.`dian_cufe`) AS dian_cufe',
+                'MAX(`dian`.`error_message`) AS dian_error_message',
                 'MAX(`' . $db_prefix . 'sales`.`quote_number`) AS quote_number',
                 'SUM(`sales_items`.`quantity_purchased`) AS items_purchased',
                 'MAX(CONCAT(`customer_p`.`first_name`, " ", `customer_p`.`last_name`)) AS customer_name',
@@ -176,6 +183,7 @@ class Sale extends Model
         }
 
         $builder->join('sales', '`sales_items`.`sale_id` = `' . $db_prefix . 'sales`.`sale_id`', 'inner');
+        $builder->join('invoices_dian_queue AS dian', '`' . $db_prefix . 'sales`.`sale_id` = `dian`.`sale_id`', 'left');
         $builder->join('people AS customer_p', '`' . $db_prefix . 'sales`.`customer_id` = `customer_p`.`person_id`', 'LEFT');
         $builder->join('customers AS customer', '`' . $db_prefix . 'sales`.`customer_id` = `customer`.`person_id`', 'LEFT');
         $builder->join('sales_payments_temp AS payments', '`' . $db_prefix . 'sales`.`sale_id` = `payments`.`sale_id`', 'LEFT OUTER');

@@ -82,7 +82,7 @@ function get_sales_manage_table_headers(): string
     $config = config(OSPOS::class)->settings;
 
     if ($config['invoice_enable']) {
-        $headers[] = ['invoice_number' => lang('Sales.invoice_number')];
+        $headers[] = ['invoice_number' => lang('Sales.invoice_number'), 'escape' => false];
         $headers[] = ['invoice' => '', 'sortable' => false, 'escape' => false];
     }
 
@@ -112,7 +112,29 @@ function get_sale_data_row(object $sale): array
     $config = config(OSPOS::class)->settings;
 
     if ($config['invoice_enable']) {
-        $row['invoice_number'] = $sale->invoice_number;
+        if (!empty($sale->invoice_number) && $config['col_electronic_invoice_enable'] && !empty($sale->dian_status)) {
+            $color = match ($sale->dian_status) {
+                'pending' => 'goldenrod',
+                'sent' => 'green',
+                'error' => 'red',
+                default => 'black',
+            };
+            $row['invoice_number'] = anchor(
+                '#',
+                $sale->invoice_number,
+                [
+                    'style' => "color: $color; font-weight: bold; text-decoration: underline; cursor: pointer;",
+                    'class' => 'dian-modal',
+                    'data-status' => $sale->dian_status,
+                    'data-cufe' => $sale->dian_cufe,
+                    'data-error' => $sale->dian_error_message,
+                    'data-invoice' => $sale->invoice_number
+                ]
+            );
+        } else {
+            $row['invoice_number'] = $sale->invoice_number;
+        }
+
         $row['invoice'] = empty($sale->invoice_number)
             ? '-'
             : anchor(
