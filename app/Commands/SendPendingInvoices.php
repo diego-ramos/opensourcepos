@@ -189,7 +189,7 @@ class SendPendingInvoices extends BaseCommand
                         'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
                         'tax_id'                => explode('-', $data['customer_tax_id'] ?? '222222222222')[0],
                         'tax_id_dv'             => count(explode('-', $data['customer_tax_id'] ?? '')) > 1 ? explode('-', $data['customer_tax_id'])[1] : '0',
-                        'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
+                        'document_type'         => $data['customer_tax_id_type'] ?? '13',
                         'additional_account_id' => $data['customer_tax_payer_type'] ?? '1',
                         'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
                         'tax_scheme_id'         => $data['customer_tax_scheme'] ?: (($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01'),
