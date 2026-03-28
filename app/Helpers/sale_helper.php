@@ -392,19 +392,14 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
     if($documentType !== 'invoice')
     {
         $invoice_format = $config['sales_invoice_format'];
-        $newInvoiceNumber = $token_lib->render($invoice_format, [], true);
-    }
-
-    if($documentType !== 'debit_note')
-    {
-        $newInvoiceNumber = $newInvoiceNumber+2;
+        $newInvoiceNumber = $config['col_electronic_prefix'] . $token_lib->render($invoice_format, [], true);
     }
 
     // Mapping to InvoiceGenerator format
     $docData = [
         'document_type' => $documentType,
         'invoice_env' => $config['col_electronic_test'] ? 'development' :'production',
-        'invoice_number' => $config['col_electronic_prefix'] . $newInvoiceNumber,
+        'invoice_number' => $newInvoiceNumber,
         'issue_date' =>  $issueDate,
         'issue_time' => $issueTime,
         'technical_key' => $config['col_electronic_tech_id'],
@@ -439,7 +434,7 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
             'name'                  => $data['customer_name'] ?: 'CONSUMIDOR FINAL',
             'tax_id'                => explode('-', $data['customer_tax_id'] ?? '222222222222')[0],
             'tax_id_dv'             => count(explode('-', $data['customer_tax_id'] ?? '')) > 1 ? explode('-', $data['customer_tax_id'])[1] : null,
-            'document_type'         => $tax_lib->get_tax_id_type_code($data['customer_tax_id_type']) ?? '13',
+            'document_type'         => $data['customer_tax_id_type'] ?? '13',
             'additional_account_id' => $data['customer_tax_payer_type'] ?? '1',
             'tax_level_code'        => $data['customer_tax_responsibility'] ?? 'R-99-PN',
             'tax_scheme_id'         => $data['customer_tax_scheme'] ?: (($data['customer_tax_id'] == '222222222222') ? 'ZZ' : '01'),
@@ -487,7 +482,7 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
         $parent_queue = $queue_model->where('sale_id', $sale_id)->where('dian_status', 'accepted')->first();
 
         $docData['billing_reference'] = [
-                    'invoice_id' => $config['col_electronic_prefix'] . $data['invoice_number'], // e.g. "SETT1"
+                    'invoice_id' => $data['invoice_number'], // e.g. "SETT1"
                     'uuid' => $parent_queue['dian_cufe'],
                     'issue_date' => date('Y-m-d', strtotime($parent_queue['updated_at']))
                 ];
