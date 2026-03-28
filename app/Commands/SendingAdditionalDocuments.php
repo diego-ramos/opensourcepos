@@ -51,6 +51,7 @@ class SendingAdditionalDocuments extends BaseCommand
             // Initialize DianFE facade
             $dianfe = new DianFE($dianConfig);
             
+            $documentType = $credit_debit === 'credit' ? 'credit_note' : 'debit_note';
             if($credit_debit === 'credit') {
                 CLI::write("🚀 Enviando credit_note of sale {$saleId} a la DIAN...");
                 $result = $dianfe->sendInvoice(getDocumentDataForDian($saleId, 'credit_note'));
@@ -59,13 +60,41 @@ class SendingAdditionalDocuments extends BaseCommand
                 $result = $dianfe->sendInvoice(getDocumentDataForDian($saleId, 'debit_note'));
             }
 
-            CLI::write("Raw Response: " . $result['response']);
+            $xmlGenerated = $result['xml'] ?? null;
+            $xmlSigned = $result['signedXml'] ?? null;
 
-            $dianStatus = DianResponseProcessor::processSoapResponse($result['response']);
+            CLI::write("Raw Response: " . ($result['response'] ?? ''));
 
-            CLI::write("✅ Credit_note enviada a la DIAN", "green");
-            CLI::write("Status: " . $dianStatus['dian_status']);
-            CLI::write("Error Message: " . $dianStatus['error_message']);
+            if (isset($result['response'])) {
+                $dianStatus = DianResponseProcessor::processSoapResponse($result['response']);
+            } else {
+                $errorMessage = $result['error'] ?? 'Unknown error';
+                $dianStatus = [
+                    'status' => 'error',
+                    'dian_status' => 'rejected',
+                    'error_message' => $errorMessage,
+                    'dian_sent_at' => date('Y-m-d H:i:s'),
+                ];
+            }
+
+            $queueData = array_merge($dianStatus, [
+                'sale_id' => $saleId,
+                'document_type' => $documentType,
+                'xml_generated' => $xmlGenerated,
+                'xml_signed' => $xmlSigned,
+            ]);
+
+            $queueModel = new \App\Models\InvoiceDianQueue();
+            $queueModel->insert($queueData);
+
+            CLI::write("✅ {$documentType} processed.", "green");
+            if (isset($dianStatus['dian_status'])) {
+                CLI::write("Status: " . $dianStatus['dian_status']);
+            }
+            if (!empty($dianStatus['error_message'])) {
+                CLI::write("Error Message: " . $dianStatus['error_message']);
+            }
+        
         
         }catch (\Throwable $e) {
             CLI::error("❌ Error en sale {$saleId}: {$e->getMessage()}");

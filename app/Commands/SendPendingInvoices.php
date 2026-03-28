@@ -31,6 +31,7 @@ class SendPendingInvoices extends BaseCommand
         $config = config(OSPOS::class)->settings;
         $queue = new InvoiceDianQueue();
         $queue->where('status', 'pending');
+        $queue->where('document_type', 'invoice');
         if(isset($saleId))
         {
             $queue->where('sale_id', $saleId);

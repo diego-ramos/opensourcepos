@@ -778,7 +778,8 @@ class Sales extends Secure_Controller
                         $invoiceDianQueue = model(InvoiceDianQueue::class);
                         $invoiceDianQueue->insert([
                             'sale_id' => $data['sale_id_num'],
-                            'status' => 'pending'
+                            'status' => 'pending',
+                            'document_type' => 'invoice'
                         ]);
 
                         command('dian:send-pending-invoices ' . $data['sale_id_num']);

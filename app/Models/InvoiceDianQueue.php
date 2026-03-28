@@ -12,6 +12,7 @@ class InvoiceDianQueue extends Model
     protected $allowedFields = [
         'sale_id',
         'status',
+        'document_type',
         'dian_cufe',
         'dian_response_code',
         'dian_response_description',

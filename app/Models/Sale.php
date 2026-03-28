@@ -762,6 +762,7 @@ class Sale extends Model
 
         foreach ($sale_ids as $sale_id) {
             $result &= $this->delete($sale_id, false, $update_inventory, $employee_id);
+            command('dian:send-additional-documents ' . $sale_id . ' credit'); //Void electronic invoice
         }
 
         return $result;
