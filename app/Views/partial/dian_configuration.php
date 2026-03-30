@@ -136,6 +136,32 @@
     </div>
 </div>
 <div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_range_min'), 'col_electronic_credit_range_min', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'col_electronic_credit_range_min',
+            'id'    => 'col_electronic_credit_range_min',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_range_min'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_range_max'), 'col_electronic_credit_range_max', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'col_electronic_credit_range_max',
+            'id'    => 'col_electronic_credit_range_max',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_range_max'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_range_resolution'), 'col_electronic_range_resolution', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
@@ -183,6 +209,32 @@
             'id'    => 'col_electronic_prefix',
             'class' => 'form-control input-sm',
             'value' => $config['col_electronic_prefix'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_prefix'), 'col_electronic_credit_prefix', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'text',
+            'name'  => 'col_electronic_credit_prefix',
+            'id'    => 'col_electronic_credit_prefix',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_prefix'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.last_used_credit_note_number'), 'last_used_credit_note_number', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'last_used_credit_note_number',
+            'id'    => 'last_used_credit_note_number',
+            'class' => 'form-control input-sm',
+            'value' => $config['last_used_credit_note_number'] ?? '',
             'required' => true
         ]) ?>
     </div>

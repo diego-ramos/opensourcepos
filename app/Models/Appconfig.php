@@ -150,6 +150,21 @@ class Appconfig extends Model
     /**
      * @throws ReflectionException
      */
+    public function acquire_next_credit_note_sequence(bool $save = true): string
+    {
+        $config = config(OSPOS::class)->settings;
+        $last_used = (int)$config['last_used_credit_note_number'] + 1;
+
+        if ($save) {
+            $this->save(['last_used_credit_note_number' => $last_used]);
+        }
+
+        return $last_used;
+    }
+
+    /**
+     * @throws ReflectionException
+     */
     public function acquire_next_quote_sequence(bool $save = true): string
     {
         $config = config(OSPOS::class)->settings;

@@ -391,8 +391,8 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
 
     if($documentType !== 'invoice')
     {
-        $invoice_format = $config['sales_invoice_format'];
-        $newInvoiceNumber = $config['col_electronic_prefix'] . $token_lib->render($invoice_format, [], true);
+        $invoice_format = str_replace('{I_DIAN}', '{CN_DIAN}', $config['sales_invoice_format']);
+        $newInvoiceNumber = $config['col_electronic_credit_prefix'] . $token_lib->render($invoice_format, [], true);
     }
 
     // Mapping to InvoiceGenerator format
