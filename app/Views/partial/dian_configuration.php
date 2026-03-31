@@ -3,6 +3,9 @@
 // Admin UI for managing DIAN configuration
 ?>
 
+<h4><?= lang('Config.dian_software_system') ?? 'Software & System' ?></h4>
+<hr>
+
 <div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_software_id'), 'col_electronic_software_id', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
@@ -67,6 +70,34 @@
     </div>
 </div>
 <div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_test'), 'col_electronic_test', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_checkbox([
+            'name'    => 'col_electronic_test',
+            'value'   => 'col_electronic_test',
+            'id'      => 'col_electronic_test',
+            'checked' => $config['col_electronic_test'] == 1
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_test_set_id'), 'col_electronic_test_set_id', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'text',
+            'name'  => 'col_electronic_test_set_id',
+            'id'    => 'col_electronic_test_set_id',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_test_set_id'] ?? '',
+        ]) ?>
+    </div>
+</div>
+
+<br>
+<h4><?= lang('Config.dian_certificates') ?? 'Certificates' ?></h4>
+<hr>
+
+<div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_invoice_cert_key_path'), 'col_electronic_invoice_cert_key_path', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
@@ -109,58 +140,11 @@
         ]) ?>
     </div>
 </div>
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Config.col_electronic_range_min'), 'col_electronic_range_min', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-4">
-        <?= form_input([
-            'type'  => 'number',
-            'name'  => 'col_electronic_range_min',
-            'id'    => 'col_electronic_range_min',
-            'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_range_min'] ?? '',
-            'required' => true
-        ]) ?>
-    </div>
-</div>
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Config.col_electronic_range_max'), 'col_electronic_range_max', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-4">
-        <?= form_input([
-            'type'  => 'number',
-            'name'  => 'col_electronic_range_max',
-            'id'    => 'col_electronic_range_max',
-            'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_range_max'] ?? '',
-            'required' => true
-        ]) ?>
-    </div>
-</div>
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Config.col_electronic_credit_range_min'), 'col_electronic_credit_range_min', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-4">
-        <?= form_input([
-            'type'  => 'number',
-            'name'  => 'col_electronic_credit_range_min',
-            'id'    => 'col_electronic_credit_range_min',
-            'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_credit_range_min'] ?? '',
-            'required' => true
-        ]) ?>
-    </div>
-</div>
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Config.col_electronic_credit_range_max'), 'col_electronic_credit_range_max', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-4">
-        <?= form_input([
-            'type'  => 'number',
-            'name'  => 'col_electronic_credit_range_max',
-            'id'    => 'col_electronic_credit_range_max',
-            'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_credit_range_max'] ?? '',
-            'required' => true
-        ]) ?>
-    </div>
-</div>
+
+<br>
+<h4><?= lang('Config.dian_invoices') ?? 'Invoices Configuration' ?></h4>
+<hr>
+
 <div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_range_resolution'), 'col_electronic_range_resolution', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
@@ -201,6 +185,32 @@
     </div>
 </div>
 <div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_range_min'), 'col_electronic_range_min', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'col_electronic_range_min',
+            'id'    => 'col_electronic_range_min',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_range_min'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_range_max'), 'col_electronic_range_max', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'col_electronic_range_max',
+            'id'    => 'col_electronic_range_max',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_range_max'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
     <?= form_label(lang('Config.col_electronic_prefix'), 'col_electronic_prefix', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-4">
         <?= form_input([
@@ -209,6 +219,73 @@
             'id'    => 'col_electronic_prefix',
             'class' => 'form-control input-sm',
             'value' => $config['col_electronic_prefix'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+
+<br>
+<h4><?= lang('Config.dian_credit_notes') ?? 'Credit Notes Configuration' ?></h4>
+<hr>
+
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_resolution'), 'col_electronic_credit_resolution', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'text',
+            'name'  => 'col_electronic_credit_resolution',
+            'id'    => 'col_electronic_credit_resolution',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_resolution'] ?? '',
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_range_start_date'), 'col_electronic_credit_range_start_date', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'date',
+            'name'  => 'col_electronic_credit_range_start_date',
+            'id'    => 'col_electronic_credit_range_start_date',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_range_start_date'] ?? '',
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_range_end_date'), 'col_electronic_credit_range_end_date', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'date',
+            'name'  => 'col_electronic_credit_range_end_date',
+            'id'    => 'col_electronic_credit_range_end_date',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_range_end_date'] ?? '',
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_range_min'), 'col_electronic_credit_range_min', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'col_electronic_credit_range_min',
+            'id'    => 'col_electronic_credit_range_min',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_range_min'] ?? '',
+            'required' => true
+        ]) ?>
+    </div>
+</div>
+<div class="form-group form-group-sm">
+    <?= form_label(lang('Config.col_electronic_credit_range_max'), 'col_electronic_credit_range_max', ['class' => 'control-label col-xs-3']) ?>
+    <div class="col-xs-4">
+        <?= form_input([
+            'type'  => 'number',
+            'name'  => 'col_electronic_credit_range_max',
+            'id'    => 'col_electronic_credit_range_max',
+            'class' => 'form-control input-sm',
+            'value' => $config['col_electronic_credit_range_max'] ?? '',
             'required' => true
         ]) ?>
     </div>
@@ -236,29 +313,6 @@
             'class' => 'form-control input-sm',
             'value' => $config['last_used_credit_note_number'] ?? '',
             'required' => true
-        ]) ?>
-    </div>
-</div>
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Config.col_electronic_test'), 'col_electronic_test', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-4">
-        <?= form_checkbox([
-            'name'    => 'col_electronic_test',
-            'value'   => 'col_electronic_test',
-            'id'      => 'col_electronic_test',
-            'checked' => $config['col_electronic_test'] == 1
-        ]) ?>
-    </div>
-</div>
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Config.col_electronic_test_set_id'), 'col_electronic_test_set_id', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-4">
-        <?= form_input([
-            'type'  => 'text',
-            'name'  => 'col_electronic_test_set_id',
-            'id'    => 'col_electronic_test_set_id',
-            'class' => 'form-control input-sm',
-            'value' => $config['col_electronic_test_set_id'] ?? '',
         ]) ?>
     </div>
 </div>

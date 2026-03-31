@@ -464,14 +464,21 @@ function getDocumentDataForDian(int $sale_id, string $documentType = 'invoice'):
         }, $data['payments'] ?? []),
     ];
 
-    if (!empty($config['col_electronic_range_resolution'])) {
+    $res_auth = $documentType !== 'invoice' ? ($config['col_electronic_credit_resolution'] ?? '') : ($config['col_electronic_range_resolution'] ?? '');
+    $res_start_date = $documentType !== 'invoice' ? ($config['col_electronic_credit_range_start_date'] ?? '') : ($config['col_electronic_range_start_date'] ?? '');
+    $res_end_date = $documentType !== 'invoice' ? ($config['col_electronic_credit_range_end_date'] ?? '') : ($config['col_electronic_range_end_date'] ?? '');
+    $res_min = $documentType !== 'invoice' ? ($config['col_electronic_credit_range_min'] ?? '') : ($config['col_electronic_range_min'] ?? '');
+    $res_max = $documentType !== 'invoice' ? ($config['col_electronic_credit_range_max'] ?? '') : ($config['col_electronic_range_max'] ?? '');
+    $res_prefix = $documentType !== 'invoice' ? ($config['col_electronic_credit_prefix'] ?? '') : ($config['col_electronic_prefix'] ?? '');
+
+    if (!empty($res_auth)) {
         $docData['resolution'] = [
-            'authorization_number' => $config['col_electronic_range_resolution'],
-            'start_date' => $config['col_electronic_range_start_date'],
-            'end_date' => $config['col_electronic_range_end_date'],
-            'from' => $config['col_electronic_range_min'],
-            'to' => $config['col_electronic_range_max'],
-            'prefix' => $config['col_electronic_prefix']
+            'authorization_number' => $res_auth,
+            'start_date' => $res_start_date,
+            'end_date' => $res_end_date,
+            'from' => $res_min,
+            'to' => $res_max,
+            'prefix' => $res_prefix
         ];
     }
 

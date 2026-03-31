@@ -847,6 +847,9 @@ class Config extends Secure_Controller
             $dian_config['col_electronic_range_start_date'] = $this->request->getPost('col_electronic_range_start_date') ?? '';
             $dian_config['col_electronic_range_end_date'] = $this->request->getPost('col_electronic_range_end_date') ?? '';
             $dian_config['col_electronic_prefix'] = $this->request->getPost('col_electronic_prefix') ?? '';
+            $dian_config['col_electronic_credit_resolution'] = $this->request->getPost('col_electronic_credit_resolution') ?? '';
+            $dian_config['col_electronic_credit_range_start_date'] = $this->request->getPost('col_electronic_credit_range_start_date') ?? '';
+            $dian_config['col_electronic_credit_range_end_date'] = $this->request->getPost('col_electronic_credit_range_end_date') ?? '';
             $dian_config['col_electronic_credit_range_min'] = $this->request->getPost('col_electronic_credit_range_min') ?? '';
             $dian_config['col_electronic_credit_range_max'] = $this->request->getPost('col_electronic_credit_range_max') ?? '';
             $dian_config['col_electronic_credit_prefix'] = $this->request->getPost('col_electronic_credit_prefix') ?? '';
