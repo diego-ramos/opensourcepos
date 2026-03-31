@@ -7,6 +7,7 @@ require_once ROOTPATH . 'vendor/autoload.php';
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use App\Libraries\DianResponseProcessor;
+use App\Models\InvoiceDianQueue;
 use Config\OSPOS;
 use DianFE\DianFE;
 use App\Events\Load_config;
@@ -22,6 +23,28 @@ class SendingAdditionalDocuments extends BaseCommand
         helper('sale');
 
         $saleId = $params[0] ?? null;
+        if (!$saleId) {
+            if (is_cli()) {
+                CLI::error("❌ Sale ID is required.");
+            } else {
+                log_message('error', "❌ Sale ID is required.");
+            }
+            return;
+        }
+
+        $queue = new InvoiceDianQueue();
+        $entry = $queue->where('sale_id', $saleId)
+            ->where('document_type', 'invoice')->first();
+
+        if (!$entry) {
+            if (is_cli()) {
+                CLI::error("❌ Sale ID {$saleId} not found in queue.");
+            } else {
+                log_message('error', "❌ Sale ID {$saleId} not found in queue.");
+            }
+            return;
+        }
+
         $credit_debit = $params[1] ?? null;
 
         $CIconfig = new Load_config();
@@ -52,13 +75,11 @@ class SendingAdditionalDocuments extends BaseCommand
             $dianfe = new DianFE($dianConfig);
             
             $documentType = $credit_debit === 'credit' ? 'credit_note' : 'debit_note';
-            if($credit_debit === 'credit') {
-                CLI::write("🚀 Enviando credit_note of sale {$saleId} a la DIAN...");
-                $result = $dianfe->sendInvoice(getDocumentDataForDian($saleId, 'credit_note'));
-            }else {
-                CLI::write("🚀 Enviando debit_note of sale {$saleId} a la DIAN...");
-                $result = $dianfe->sendInvoice(getDocumentDataForDian($saleId, 'debit_note'));
-            }
+            $docData = getDocumentDataForDian($saleId, $documentType);
+            
+            CLI::write("🚀 Enviando {$documentType} of sale {$saleId} a la DIAN...");
+            $result = $dianfe->sendInvoice($docData);
+            $trackId = $docData['invoice_number'] ?? null;
 
             $xmlGenerated = $result['xml'] ?? null;
             $xmlSigned = $result['signedXml'] ?? null;
@@ -79,6 +100,7 @@ class SendingAdditionalDocuments extends BaseCommand
 
             $queueData = array_merge($dianStatus, [
                 'sale_id' => $saleId,
+                'trackId' => $trackId,
                 'document_type' => $documentType,
                 'xml_generated' => $xmlGenerated,
                 'xml_signed' => $xmlSigned,
@@ -97,8 +119,13 @@ class SendingAdditionalDocuments extends BaseCommand
         
         
         }catch (\Throwable $e) {
-            CLI::error("❌ Error en sale {$saleId}: {$e->getMessage()}");
-            CLI::error("❌ Stac ktrace: {$e->getTraceAsString()}");
+            if (is_cli()) {
+                CLI::error("❌ Error en sale {$saleId}: {$e->getMessage()}");
+                CLI::error("❌ Stac ktrace: {$e->getTraceAsString()}");
+            } else {
+                log_message('error', "❌ Error en sale {$saleId}: {$e->getMessage()}");
+                log_message('error', "❌ Stac ktrace: {$e->getTraceAsString()}");
+            }
         }
     }
 }

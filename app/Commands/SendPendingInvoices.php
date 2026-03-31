@@ -86,7 +86,11 @@ class SendPendingInvoices extends BaseCommand
 
                 if (empty($data['cart'])) {
                     DianResponseProcessor::processError($entry['id'], "Sale or items not found for sale_id {$entry['sale_id']}");
-                    CLI::error("❌ Sale or items not found for sale_id {$entry['sale_id']}");
+                    if (is_cli()) {
+                        CLI::error("❌ Sale or items not found for sale_id {$entry['sale_id']}");
+                    } else {
+                        log_message('error', "❌ Sale or items not found for sale_id {$entry['sale_id']}");
+                    }
                     continue;
                 }
 
@@ -223,6 +227,8 @@ class SendPendingInvoices extends BaseCommand
 
                 // Initialize DianFE facade
                 $dianfe = new DianFE($dianConfig);
+
+                (new InvoiceDianQueue())->update($entry['id'], ['trackId' => $invoiceData['invoice_number']]);
                 
                 CLI::write("🚀 Enviando a la DIAN...");
                 $result = $dianfe->sendInvoice($invoiceData);
@@ -248,25 +254,35 @@ class SendPendingInvoices extends BaseCommand
                         }
                     } else {
                         $errorMsg = $result['error'] ?? 'Error desconocido';
-                        CLI::error("❌ Fallo en el envío: " . $errorMsg);
-                        log_message('error', "DIAN Error (Sale ID {$entry['sale_id']}): " . $errorMsg);
+                        if (is_cli()) {
+                            CLI::error("❌ Fallo en el envío: " . $errorMsg);
+                        } else {
+                            log_message('error', "DIAN Error (Sale ID {$entry['sale_id']}): " . $errorMsg);
+                        }
                         DianResponseProcessor::processError($entry['id'], $errorMsg, $xmlGenerated, $xmlSigned);
                     }
                 } else {
                     $errorMsg = $result['error'] ?? 'Error desconocido';
-                    CLI::error("❌ Fallo en el envío: " . $errorMsg);
-                    log_message('error', "DIAN Error (Sale ID {$entry['sale_id']}): " . $errorMsg);
+                    if (is_cli()) {
+                            CLI::error("❌ Fallo en el envío: " . $errorMsg);
+                    } else {
+                        log_message('error', "DIAN Error (Sale ID {$entry['sale_id']}): " . $errorMsg);
+                    }
                     DianResponseProcessor::processError($entry['id'], $errorMsg, $xmlGenerated, $xmlSigned);
                 }
             } catch (\Throwable $e) {
                DianResponseProcessor::processError($entry['id'], $e->getMessage(), $xmlGenerated ?? null, $xmlSigned ?? null);
-                CLI::error("❌ Error en sale_id {$entry['sale_id']}: {$e->getMessage()}");
+               if (is_cli()) {
+                    CLI::error("❌ Error en sale_id {$entry['sale_id']}: {$e->getMessage()}");
+                    CLI::error("❌ Stacktrace: {$e->getTraceAsString()}");
+                } 
                 log_message('error', "DIAN critical exception for sale_id {$entry['sale_id']}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-                CLI::error("❌ Stacktrace: {$e->getTraceAsString()}");
             }
         }
 
-        CLI::write("✅ All pending invoices processed.", 'green');
+        if (is_cli()) {
+            CLI::write("✅ All pending invoices processed.", 'green');
+        }
     }
 
     private function sendInvoiceByEmail(array $invoiceData, string $xmlContent)
