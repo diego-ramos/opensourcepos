@@ -290,7 +290,9 @@ class SendPendingInvoices extends BaseCommand
         if (!empty($invoiceData['customer_email']) && $invoiceData['customer_email'] !== 'noemail@noemail.com') {
           load_dian_data($invoiceData['sale_id_num'], $invoiceData);
           send_pdf($invoiceData, 'invoice', $xmlContent);
-          CLI::write("✅ Factura enviada por correo electrónico a {$invoiceData['customer_email']}.", "green");
+          if (is_cli()) {
+            CLI::write("✅ Factura enviada por correo electrónico a {$invoiceData['customer_email']}.", "green");
+          }
         }
     }
     

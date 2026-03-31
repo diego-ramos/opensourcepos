@@ -11,6 +11,7 @@ use App\Models\InvoiceDianQueue;
 use Config\OSPOS;
 use DianFE\DianFE;
 use App\Events\Load_config;
+use App\Models\Employee;
 
 class SendingAdditionalDocuments extends BaseCommand
 {
@@ -49,8 +50,21 @@ class SendingAdditionalDocuments extends BaseCommand
 
         $CIconfig = new Load_config();
         $CIconfig->load_config();
-
         $config = config(OSPOS::class)->settings;
+
+        $employee_model = model(Employee::class);
+        $logged_in_employee_info = $employee_model->get_info(1); // Default to admin for CLI
+
+        // Load up global global_view_data visible to all the loaded views
+        $global_view_data = [
+            'user_info'       => $logged_in_employee_info,
+            'controller_name' => 'sales',
+            'config'          => $config
+        ];
+
+        // This view allows view-accessible data across multiple views since $this->load->vars() does not exist in CI4
+        // calling it here populates the renderer with global data, and saveData => true ensures it persists
+        view('viewData', $global_view_data, ['saveData' => true]);
 
         $dianConfig = [
             'cert_path' => $config['col_electronic_invoice_cert_crt_path'],
@@ -112,6 +126,9 @@ class SendingAdditionalDocuments extends BaseCommand
             CLI::write("✅ {$documentType} processed.", "green");
             if (isset($dianStatus['dian_status'])) {
                 CLI::write("Status: " . $dianStatus['dian_status']);
+                if ($dianStatus['dian_status'] === 'accepted') {
+                    $this->sendAdditionalDocumentByEmail($saleId, $trackId, $xmlSigned, $documentType);
+                }
             }
             if (!empty($dianStatus['error_message'])) {
                 CLI::write("Error Message: " . $dianStatus['error_message']);
@@ -126,6 +143,20 @@ class SendingAdditionalDocuments extends BaseCommand
                 log_message('error', "❌ Error en sale {$saleId}: {$e->getMessage()}");
                 log_message('error', "❌ Stac ktrace: {$e->getTraceAsString()}");
             }
+        }
+    }
+
+    private function sendAdditionalDocumentByEmail(string $sale_id, string $credit_debit_id, string $xmlContent, string $documentType)
+    {
+        $data = get_sale_data($sale_id);
+        if (!empty($data['customer_email']) && $data['customer_email'] !== 'noemail@noemail.com') {
+          $data['credit_debit_id'] = $credit_debit_id;
+          $data[$documentType . '_number'] = $credit_debit_id;
+          load_dian_data($data['sale_id_num'], $data);
+          send_pdf($data, $documentType, $xmlContent);
+          if (is_cli()) {
+            CLI::write("✅ {$documentType} enviada por correo electrónico a {$data['customer_email']}.", "green");
+          }
         }
     }
 }
