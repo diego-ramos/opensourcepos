@@ -97,3 +97,10 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
+
+.wrap-text_58 {
+    word-break: break-all;
+    white-space: normal;
+    display: block;
+    max-width: 180px;
+}

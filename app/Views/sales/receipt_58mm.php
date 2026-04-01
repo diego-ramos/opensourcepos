@@ -122,7 +122,10 @@
 
         <?php if(isset($cufe)) { ?>
         <div id="barcode">
-            <div class="wrap-text"> CUFE: <?= $cufe ?></div>
+            <div>CUFE:</div>
+            <div>
+                <?= chunk_split($cufe, 32, "<br>") ?>
+            </div>
             <img src="<?= $qr_code ?>" alt="DIAN QR Code" style="width: 200px; height: 200px;" /><br>
         </div>
         <?php } ?>
