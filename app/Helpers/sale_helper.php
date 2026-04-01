@@ -26,7 +26,7 @@ use function PHPUnit\Framework\isNan;
  * @param int $sale_id
  * @return array
  */
-function get_sale_data(int $sale_id): array
+function get_sale_data(int $sale_id, ?string $cude = null): array
 {
     $sale_lib = new Sale_lib();
     $tax_lib = new Tax_lib();
@@ -132,12 +132,12 @@ function get_sale_data(int $sale_id): array
 
     $data['invoice_view'] = $config['invoice_type'];
 
-    load_dian_data($sale_id, $data);
+    load_dian_data($sale_id, $data, $cude);
 
     return $data;
 }
 
-function load_dian_data(int $sale_id, array &$data)
+function load_dian_data(int $sale_id, array &$data, ?string $cude = null)
 {
     $config = config(OSPOS::class)->settings;
     $dian_config = config(Dian::class);
@@ -148,10 +148,11 @@ function load_dian_data(int $sale_id, array &$data)
         return;
     }
     
-    $data['cufe'] = $queue_info['dian_cufe'];
+    $data['cufe'] = $cude ?? $queue_info['dian_cufe'];
     if($config['col_electronic_invoice_enable'] && is_numeric($data['invoice_number'])) {
         $data['invoice_number'] = $config['col_electronic_prefix'] .$data['invoice_number'];
     }
+    $CUDE_CUFE = $cude ? "CUDE" : "CUFE";
     
     $qr_text =
     "NumFac=".$sale_id."\n".
@@ -162,7 +163,7 @@ function load_dian_data(int $sale_id, array &$data)
     "ValFac=".number_format($data['subtotal'], 2, '.', '')."\n".
     "ValIva=".number_format($data['tax_total'], 2, '.', '')."\n".
     "ValTot=".number_format($data['non_cash_total'], 2, '.', '')."\n".
-    "CUFE=".$data['cufe']."\n".
+    $CUDE_CUFE."=".$data['cufe']."\n".
     "QRCode=".$dian_config->catalog_url."document/searchqr?documentkey=".$data['cufe'];
 
     $data['qr_code'] = (new QRCode)->render($qr_text);

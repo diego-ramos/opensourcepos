@@ -127,7 +127,7 @@ class SendingAdditionalDocuments extends BaseCommand
             if (isset($dianStatus['dian_status'])) {
                 CLI::write("Status: " . $dianStatus['dian_status']);
                 if ($dianStatus['dian_status'] === 'accepted') {
-                    $this->sendAdditionalDocumentByEmail($saleId, $trackId, $xmlSigned, $documentType);
+                    $this->sendAdditionalDocumentByEmail($saleId, $trackId, $xmlSigned, $documentType, $queueData['dian_cufe']);
                 }
             }
             if (!empty($dianStatus['error_message'])) {
@@ -146,13 +146,12 @@ class SendingAdditionalDocuments extends BaseCommand
         }
     }
 
-    private function sendAdditionalDocumentByEmail(string $sale_id, string $credit_debit_id, string $xmlContent, string $documentType)
+    private function sendAdditionalDocumentByEmail(string $sale_id, string $credit_debit_id, string $xmlContent, string $documentType, $cude)
     {
-        $data = get_sale_data($sale_id);
+        $data = get_sale_data($sale_id, $cude);
         if (!empty($data['customer_email']) && $data['customer_email'] !== 'noemail@noemail.com') {
           $data['credit_debit_id'] = $credit_debit_id;
           $data[$documentType . '_number'] = $credit_debit_id;
-          load_dian_data($data['sale_id_num'], $data);
           send_pdf($data, $documentType, $xmlContent);
           if (is_cli()) {
             CLI::write("✅ {$documentType} enviada por correo electrónico a {$data['customer_email']}.", "green");
