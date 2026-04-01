@@ -22,7 +22,7 @@
         <div class="center_58">
         	<?php if($config['company_logo'] != '') { ?>
                 <div id="company_name">
-                    <img id="image" src="<?= base_url('uploads/' . esc($config['company_logo'], 'url')) ?>" alt="company_logo" />
+                    <img id="image" src="<?= base_url('uploads/' . esc($config['company_logo'], 'url')) ?>" alt="company_logo" style="width: 180px; max-width: 100%; height: auto;"/>
                 </div>
             <?php } ?>
             <strong><?= esc($config['company']) ?></strong><br>
