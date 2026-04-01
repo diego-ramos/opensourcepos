@@ -6,8 +6,43 @@
  */
 ?>
 
+<script src="/js/qz-tray.js"></script>
+
+<script>
+    async function printReceipt58() {
+
+        const config = qz.configs.create("Vendor-POS-Printer", {
+            encoding: "UTF-8"
+        });
+
+        const html = document.getElementById("receipt_wrapper_58").outerHTML;
+
+        const printData = [{
+            type: 'raw',
+            format: 'html',
+            flavor: 'plain',
+            data: html,
+            options: {
+                    dotDensity: "double",
+                    language: "ESCPOS",
+                    pageWidth: "576",
+                    x: "0",
+                    y: "0",
+                }
+            }, 
+            // feeds (líneas en blanco)
+            { type: 'raw', format: 'command', data: '\n\n\n\n' },
+
+            // corte parcial
+            { type: 'raw', format: 'command', data: '\x1D\x56\x01' }
+        ];
+
+        await qz.print(config, printData);
+    }
+</script>
+
 <script type="text/javascript">
-    function printdoc() {
+  async function printdoc() {
         // Install Firefox addon in order to use this plugin
         if (window.jsPrintSetup) {
             // Set top margins in millimeters
@@ -51,7 +86,23 @@
                 }
             }
         } else {
-            window.print();
+            const isWindows = navigator.platform.toLowerCase().includes('win');
+
+            if (isWindows) {
+                window.print();
+                return;
+            }
+
+            try {
+                if (!qz.websocket.isActive()) {
+                    await qz.websocket.connect({ retries: 0, delay: 0 });
+                }
+
+                await printReceipt58();
+
+            } catch (e) {
+                window.print();
+            }
         }
     }
 
