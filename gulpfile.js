@@ -57,9 +57,11 @@ gulp.task('package-uncompressed', function () {
         '.env.example',
         'composer.json',
         'composer.lock',
+        'setup.sh',
+        'public/uploads/item_pics/.gitignore',
         'spark'
     ];
-    return gulp.src(sources, { allowEmpty: true, encoding: false }).pipe(gulp.dest('dist/deployment'));
+    return gulp.src(sources, { allowEmpty: true, encoding: false }).pipe(gulp.dest('C:\\Users\\diego\\Documents\\Open_POS\\Despliegues\\web_app'));
 });
 
 

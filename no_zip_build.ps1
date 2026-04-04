@@ -22,9 +22,10 @@ Write-Output ""
 Write-Output "============================================================================="
 Write-Output "Step 2: Copying files to deployment directory (No Compression)"
 Write-Output "============================================================================="
-$deployPath = "dist/deployment"
+$deployPath = "C:\Users\diego\Documents\Open_POS\Despliegues\web_app"
 if (Test-Path $deployPath) {
-    Remove-Item -Path $deployPath -Recurse -Force
+    # Remove all contents except git-related files and folders (.git, .gitignore, etc.)
+    Get-ChildItem -Path $deployPath -Force | Where-Object { $_.Name -notmatch '^\.git' } | Remove-Item -Recurse -Force
 }
 
 # We use a custom gulp task in gulpfile.js that excludes the 'vendor' folder
