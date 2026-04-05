@@ -32,16 +32,6 @@ class Session extends BaseConfig
      */
     public string $cookieName = 'ospos_session';
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        $appName = env('app.name');
-        if (! empty($appName)) {
-            $this->cookieName .= '_' . preg_replace('/[^0-9a-z_-]/i', '', strtolower($appName));
-        }
-    }
-
     /**
      * --------------------------------------------------------------------------
      * Session Expiration
