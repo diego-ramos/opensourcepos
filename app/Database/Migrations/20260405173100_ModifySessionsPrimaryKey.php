@@ -11,6 +11,8 @@ class ModifySessionsPrimaryKey extends Migration
         $prefix = $this->db->DBPrefix;
         $table = $prefix . 'sessions';
 
+        $this->db->table($table)->truncate();
+
         // Drop the existing primary key and add a new one with only 'id'
         $this->db->query("ALTER TABLE `{$table}` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`)");
     }
