@@ -39,9 +39,9 @@
     $(document).ready(function () {
         <?= view('partial/bootstrap_tables_locale') ?>
 
-        var details_data = <?= json_encode(esc($details_data)) ?>;
+        var details_data = <?= json_encode($details_data) ?>;
         <?php if ($config['customer_reward_enable'] && !empty($details_data_rewards)) { ?>
-            var details_data_rewards = <?= json_encode(esc($details_data_rewards)) ?>;
+            var details_data_rewards = <?= json_encode($details_data_rewards) ?>;
         <?php } ?>
         <?= view('partial/visibility_js') ?>
 

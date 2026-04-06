@@ -363,11 +363,20 @@ class Reports extends Secure_Controller
         $report_data = $this->summary_items->getData($inputs);
         $summary = $this->summary_items->getSummaryData($inputs);
 
+        $item_ids = array_column($report_data, 'item_id');
+        $attribute = model(Attribute::class);
+        $attributes_map = $attribute->get_link_values_batch($item_ids);
+
         $tabular_data = [];
 
         foreach ($report_data as $row) {
+            $item_name = $row['name'];
+            if (isset($row['item_id'], $attributes_map[$row['item_id']])) {
+                $item_name .= NAME_SEPARATOR . $attributes_map[$row['item_id']];
+            }
+
             $tabular_data[] = [
-                'item_name'  => $row['name'],
+                'item_name'  => $item_name,
                 'category'   => $row['category'],
                 'cost_price' => $row['cost_price'],
                 'unit_price' => $row['unit_price'],
@@ -823,11 +832,19 @@ class Reports extends Secure_Controller
         $report_data = $this->summary_items->getData($inputs);
         $summary = $this->summary_items->getSummaryData($inputs);
 
+        $item_ids = array_column($report_data, 'item_id');
+        $attribute = model(Attribute::class);
+        $attributes_map = $attribute->get_link_values_batch($item_ids);
+
         $labels = [];
         $series = [];
 
         foreach ($report_data as $row) {
-            $labels[] = $row['name'];
+            $item_name = $row['name'];
+            if (isset($row['item_id'], $attributes_map[$row['item_id']])) {
+                $item_name .= NAME_SEPARATOR . $attributes_map[$row['item_id']];
+            }
+            $labels[] = $item_name;
             $series[] = $row['total'];
         }
 
@@ -1708,13 +1725,22 @@ class Reports extends Secure_Controller
 
         $report_data = $specific_supplier->getData($inputs);
 
+        $item_ids = array_column($report_data, 'item_id');
+        $attribute = model(Attribute::class);
+        $attributes_map = $attribute->get_link_values_batch($item_ids);
+
         $tabular_data = [];
         foreach ($report_data as $row) {
+            $item_name = $row['name'];
+            if (isset($row['item_id'], $attributes_map[$row['item_id']])) {
+                $item_name .= NAME_SEPARATOR . $attributes_map[$row['item_id']];
+            }
+
             $tabular_data[] = [
                 'id'          => $row['sale_id'],
                 'type_code'   => $row['type_code'],
                 'sale_time'   => to_datetime(strtotime($row['sale_time'])),
-                'name'        => $row['name'],
+                'name'        => $item_name,
                 'category'    => $row['category'],
                 'item_number' => $row['item_number'],
                 'quantity'    => to_quantity_decimals($row['items_purchased']),
@@ -2009,10 +2035,19 @@ class Reports extends Secure_Controller
 
         $report_data = $inventory_low->getData($inputs);
 
+        $item_ids = array_column($report_data, 'item_id');
+        $attribute = model(Attribute::class);
+        $attributes_map = $attribute->get_link_values_batch($item_ids);
+
         $tabular_data = [];
         foreach ($report_data as $row) {
+            $item_name = $row['name'];
+            if (isset($row['item_id'], $attributes_map[$row['item_id']])) {
+                $item_name .= NAME_SEPARATOR . $attributes_map[$row['item_id']];
+            }
+
             $tabular_data[] = [
-                'item_name'     => $row['name'],
+                'item_name'     => $item_name,
                 'item_number'   => $row['item_number'],
                 'quantity'      => to_quantity_decimals($row['quantity']),
                 'reorder_level' => to_quantity_decimals($row['reorder_level']),
@@ -2064,10 +2099,19 @@ class Reports extends Secure_Controller
 
         $report_data = $this->inventory_summary->getData($inputs);
 
+        $item_ids = array_column($report_data, 'item_id');
+        $attribute = model(Attribute::class);
+        $attributes_map = $attribute->get_link_values_batch($item_ids);
+
         $tabular_data = [];
         foreach ($report_data as $row) {
+            $item_name = $row['name'];
+            if (isset($row['item_id'], $attributes_map[$row['item_id']])) {
+                $item_name .= NAME_SEPARATOR . $attributes_map[$row['item_id']];
+            }
+
             $tabular_data[] = [
-                'item_name'         => $row['name'],
+                'item_name'         => $item_name,
                 'item_number'       => $row['item_number'],
                 'category'          => $row['category'],
                 'quantity'          => to_quantity_decimals($row['quantity']),

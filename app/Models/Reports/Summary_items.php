@@ -33,6 +33,7 @@ class Summary_items extends Summary_report
         parent::_select($inputs, $builder);    // TODO: hungarian notation
 
         $builder->select('
+                MAX(items.item_id) AS item_id,
                 MAX(items.name) AS name,
                 MAX(items.category) AS category,
                 MAX(items.cost_price) AS cost_price,

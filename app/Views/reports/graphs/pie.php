@@ -10,8 +10,8 @@
 <script type="text/javascript">
     // Labels and data series
     var data = {
-        labels: <?= json_encode(esc($labels_1, 'js')) ?>,
-        series: <?= json_encode(esc($series_data_1, 'js')) ?>
+        labels: <?= json_encode($labels_1) ?>,
+        series: <?= json_encode($series_data_1) ?>
     };
 
     // We are setting a few options for our chart and override the defaults

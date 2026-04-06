@@ -7,7 +7,7 @@ use App\Models\Item;
 /**
  *
  *
- * @property item item
+ * @property Item $item
  *
  */
 class Inventory_low extends Report
@@ -34,6 +34,7 @@ class Inventory_low extends Report
     {    // TODO: convert to using QueryBuilder. Use App/Models/Reports/Summary_taxes.php getData() as a reference template
         $item = model(Item::class);
         $query = $this->db->query("SELECT " . $item->get_item_name('name') . ",
+            items.item_id,
             items.item_number,
             item_quantities.quantity,
             items.reorder_level,

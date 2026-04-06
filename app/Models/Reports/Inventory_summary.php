@@ -7,7 +7,7 @@ use App\Models\Item;
 /**
  *
  *
- * @property item item
+ * @property Item $item
  *
  */
 class Inventory_summary extends Report
@@ -42,6 +42,7 @@ class Inventory_summary extends Report
         $builder = $this->db->table('items AS items');
         $builder->select(
             $item->get_item_name('name') . ',
+            items.item_id,
             items.item_number,
             items.category,
             item_quantities.quantity,

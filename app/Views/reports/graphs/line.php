@@ -12,10 +12,10 @@
 <script type="text/javascript">
     // Labels and data series
     var data = {
-        labels: <?= json_encode(esc($labels_1, 'js')) ?>,
+        labels: <?= json_encode($labels_1) ?>,
         series: [{
             name: '<?= esc($yaxis_title, 'js') ?>',
-            data: <?= json_encode(esc($series_data_1, 'js')) ?>
+            data: <?= json_encode($series_data_1) ?>
         }]
     };
 

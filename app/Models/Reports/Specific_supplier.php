@@ -7,7 +7,7 @@ use App\Models\Sale;
 /**
  *
  *
- * @property sale sale
+ * @property Sale $sale
  *
  */
 class Specific_supplier extends Report
@@ -65,6 +65,7 @@ class Specific_supplier extends Report
             END) AS type_code,
             MAX(sale_status) as sale_status,
             MAX(sale_time) AS sale_time,
+            MAX(item_id) AS item_id,
             MAX(name) AS name,
             MAX(category) AS category,
             MAX(item_number) AS item_number,
