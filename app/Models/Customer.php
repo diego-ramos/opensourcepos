@@ -336,6 +336,7 @@ class Customer extends Person
             $builder->orLike('email', $search);
             $builder->orLike('phone_number', $search);
             $builder->orLike('company_name', $search);
+            $builder->orLike('tax_id', $search);
         }
         $builder->groupEnd();
         $builder->where('deleted', 0);
@@ -344,7 +345,7 @@ class Customer extends Person
         foreach ($builder->get()->getResult() as $row) {
             $suggestions[] = [
                 'value' => $row->person_id,
-                'label' => $row->first_name . ' ' . $row->last_name . (!empty($row->company_name) ? ' [' . $row->company_name . ']' : '') . (!empty($row->phone_number) ? ' [' . $row->phone_number . ']' : '')
+                'label' => $row->first_name . ' ' . $row->last_name . (!empty($row->company_name) ? ' [' . $row->company_name . ']' : '') . (!empty($row->phone_number) ? ' [' . $row->phone_number . ']' : '') . (!empty($row->tax_id) ? ' [ID: ' . $row->tax_id . ']' : '')
             ];
         }
 
