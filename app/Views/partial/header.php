@@ -135,7 +135,9 @@ $request = Services::request();
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="navbar-brand hidden-sm" href="<?= site_url() ?>">OSPOS</a>
+                    <a class="navbar-brand hidden-sm" href="https://digzu.co/" target="_blank">
+                        <img src="<?= base_url('images/digzu_logo.png') ?>" alt="Digzu" style="max-height: 50px; margin-top: -12px; display: inline-block;" />
+                    </a>
                 </div>
 
                 <div class="navbar-collapse collapse">
