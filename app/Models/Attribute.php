@@ -665,7 +665,7 @@ class Attribute extends Model
         $format = $this->db->escape(dateformat_mysql());
 
         $builder = $this->db->table('attribute_links');
-        $builder->select("GROUP_CONCAT(attribute_value SEPARATOR ', ') AS attribute_values");
+        $builder->select("GROUP_CONCAT(COALESCE(NULLIF(attribute_value, ''), attribute_decimal) SEPARATOR ', ') AS attribute_values");
         $builder->select("GROUP_CONCAT(DATE_FORMAT(attribute_date, $format) SEPARATOR ', ') AS attribute_dtvalues");
         $builder->join('attribute_values', 'attribute_values.attribute_id = attribute_links.attribute_id');
         $builder->join('attribute_definitions', 'attribute_definitions.definition_id = attribute_links.definition_id');
@@ -684,6 +684,38 @@ class Attribute extends Model
             $builder->where(new RawSql("definition_flags & $definition_flags"));
         }
         return $builder->get();
+    }
+
+    public function get_link_values_batch(array $item_ids): array
+    {
+        if (empty($item_ids)) {
+            return [];
+        }
+
+        $builder = $this->db->table('attribute_links');
+        $builder->select('item_id');
+        $builder->select('GROUP_CONCAT(DISTINCT NULLIF(attribute_value, \'\') SEPARATOR \' - \') AS attr_v', false);
+        $builder->select('GROUP_CONCAT(DISTINCT attribute_decimal SEPARATOR \' - \') AS attr_d', false);
+        $builder->select('GROUP_CONCAT(DISTINCT attribute_date SEPARATOR \' - \') AS attr_dt', false);
+        $builder->join('attribute_values', 'attribute_links.attribute_id = attribute_values.attribute_id', 'left');
+        $builder->whereIn('item_id', $item_ids);
+        $builder->where('sale_id', null);
+        $builder->where('receiving_id', null);
+        $builder->groupBy('item_id');
+
+        $attributes_map = [];
+        foreach ($builder->get()->getResult() as $row) {
+            $merged = [];
+            if (!empty($row->attr_v)) $merged[] = $row->attr_v;
+            if (!empty($row->attr_d)) $merged[] = $row->attr_d;
+            if (!empty($row->attr_dt)) $merged[] = $row->attr_dt;
+            
+            if (!empty($merged)) {
+                $attributes_map[$row->item_id] = implode(' - ', $merged);
+            }
+        }
+
+        return $attributes_map;
     }
 
     /**

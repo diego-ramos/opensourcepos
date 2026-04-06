@@ -50,7 +50,7 @@
             <?php foreach($cart as $item): ?>
             
             <tr>
-                <td colspan="2"><?= $item['name']; ?></td>
+                <td colspan="2"><?= $item['name'] . ' '. $item['attribute_values']; ?></td>
             </tr>
             <tr>
                 <td>&nbsp;&nbsp;<?= to_quantity_decimals($item['quantity']); ?> x <?= to_currency($item['price']); ?></td>

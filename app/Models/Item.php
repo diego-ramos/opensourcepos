@@ -721,7 +721,10 @@ class Item extends Model
             $suggestions = array_slice($suggestions, 0, $limit);
         }
 
-        return array_unique($suggestions, SORT_REGULAR);
+        $suggestions = array_unique($suggestions, SORT_REGULAR);
+        $this->append_attributes_to_suggestions($suggestions);
+
+        return $suggestions;
     }
 
 
@@ -829,7 +832,34 @@ class Item extends Model
             $suggestions = array_slice($suggestions, 0, $limit);
         }
 
-        return array_unique($suggestions, SORT_REGULAR);
+        $suggestions = array_unique($suggestions, SORT_REGULAR);
+        $this->append_attributes_to_suggestions($suggestions);
+
+        return $suggestions;
+    }
+
+    /**
+     * @param array $suggestions
+     */
+    private function append_attributes_to_suggestions(array &$suggestions): void
+    {
+        $item_ids = [];
+        foreach ($suggestions as &$suggestion) {
+            if (isset($suggestion['value'])) {
+                $item_ids[] = (int)$suggestion['value'];
+            }
+        }
+        unset($suggestion);
+
+        $attribute = model(Attribute::class);
+        $attributes_map = $attribute->get_link_values_batch($item_ids);
+
+        foreach ($suggestions as &$suggestion) {
+            if (isset($suggestion['value'], $attributes_map[$suggestion['value']])) {
+                $suggestion['label'] .= NAME_SEPARATOR . $attributes_map[$suggestion['value']];
+            }
+        }
+        unset($suggestion);
     }
 
     /**
