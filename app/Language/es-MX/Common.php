@@ -85,5 +85,5 @@ return [
     "welcome_message"                => "Bienvenido(a) a OSPOS, haga clic en un módulo para comenzar.",
     "yes"                            => "Si",
     "you_are_using_ospos"            => "Está utilizando la versión de Código Abierto de Punto de Venta",
-    "zip"                            => "CP",
+    "zip"                            => "Código Postal",
 ];

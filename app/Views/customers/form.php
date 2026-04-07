@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.tax_id'), 'tax_id', ['class' => 'control-label col-xs-3']) ?>
+                    <?= form_label(lang('Customers.tax_id'), 'tax_id', ['class' => 'required control-label col-xs-3']) ?>
                     <div class="col-xs-4">
                         <?= form_input([
                             'name'  => 'tax_id',
@@ -134,7 +134,7 @@
                     </div>
 
                     <div class="form-group form-group-sm">
-                         <?= form_label(lang('Customers.tax_payer_type'), 'tax_payer_type', ['class' => 'control-label col-xs-3']) ?>
+                         <?= form_label(lang('Customers.tax_payer_type'), 'tax_payer_type', ['class' => 'required control-label col-xs-3']) ?>
                          <div class="col-xs-8">
                              <?= form_dropdown(
                                  'tax_payer_type',
@@ -146,7 +146,7 @@
                     </div>
 
                     <div class="form-group form-group-sm">
-                         <?= form_label(lang('Customers.tax_scheme'), 'tax_scheme', ['class' => 'control-label col-xs-3']) ?>
+                         <?= form_label(lang('Customers.tax_scheme'), 'tax_scheme', ['class' => 'required control-label col-xs-3']) ?>
                          <div class="col-xs-8">
                              <?= form_dropdown(
                                  'tax_scheme',
@@ -158,7 +158,7 @@
                     </div>
 
                     <div class="form-group form-group-sm">
-                        <?= form_label(lang('Customers.tax_responsibility'), 'tax_responsibility', ['class' => 'control-label col-xs-3']) ?>
+                        <?= form_label(lang('Customers.tax_responsibility'), 'tax_responsibility', ['class' => 'required control-label col-xs-3']) ?>
                         <div class="col-xs-8">
                             <?= form_multiselect(
                                 'tax_responsibility[]',
@@ -551,6 +551,12 @@
                 first_name: 'required',
                 last_name: 'required',
                 consent: 'required',
+                tax_id: 'required',
+                tax_scheme: 'required',
+                tax_responsibility: 'required',
+                city: 'required',
+                state: 'required',
+                country: 'required',
                 email: {
                     remote: {
                         url: "<?= "$controller_name/checkEmail" ?>",
@@ -559,7 +565,8 @@
                             'person_id': "<?= $person_info->person_id ?>"
                             // Email is posted by default
                         }
-                    }
+                    }, 
+                    required: true
                 },
                 account_number: {
                     remote: {
@@ -577,8 +584,17 @@
                 first_name: "<?= lang('Common.first_name_required') ?>",
                 last_name: "<?= lang('Common.last_name_required') ?>",
                 consent: "<?= lang('Customers.consent_required') ?>",
-                email: "<?= lang('Customers.email_duplicate') ?>",
-                account_number: "<?= lang('Customers.account_number_duplicate') ?>"
+                email: {
+                    required: "<?= lang('Customers.email_required') ?>",
+                    remote: "<?= lang('Customers.email_duplicate') ?>"
+                },
+                account_number: "<?= lang('Customers.account_number_duplicate') ?>",
+                city: "<?= lang('Customers.city_required') ?>",
+                state: "<?= lang('Customers.state_required') ?>",
+                country: "<?= lang('Customers.country_required') ?>",
+                tax_responsibility: "<?= lang('Customers.tax_responsibility_required') ?>",
+                tax_scheme: "<?= lang('Customers.tax_scheme_required') ?>",
+                tax_id: "<?= lang('Customers.tax_id_required') ?>"
             }
         }, form_support.error));
     });

@@ -665,8 +665,8 @@ class Attribute extends Model
         $format = $this->db->escape(dateformat_mysql());
 
         $builder = $this->db->table('attribute_links');
-        $builder->select("GROUP_CONCAT(COALESCE(NULLIF(attribute_value, ''), attribute_decimal) SEPARATOR ', ') AS attribute_values");
-        $builder->select("GROUP_CONCAT(DATE_FORMAT(attribute_date, $format) SEPARATOR ', ') AS attribute_dtvalues");
+        $builder->select("GROUP_CONCAT(DISTINCT COALESCE(NULLIF(attribute_value, ''), attribute_decimal) SEPARATOR ', ') AS attribute_values");
+        $builder->select("GROUP_CONCAT(DISTINCT DATE_FORMAT(attribute_date, $format) SEPARATOR ', ') AS attribute_dtvalues");
         $builder->join('attribute_values', 'attribute_values.attribute_id = attribute_links.attribute_id');
         $builder->join('attribute_definitions', 'attribute_definitions.definition_id = attribute_links.definition_id');
         $builder->where('definition_type <>', GROUP);

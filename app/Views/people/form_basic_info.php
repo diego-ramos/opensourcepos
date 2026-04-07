@@ -55,7 +55,7 @@
 </div>
 
 <div class="form-group form-group-sm">
-    <?= form_label(lang('Common.email'), 'email', ['class' => 'control-label col-xs-3']) ?>
+    <?= form_label(lang('Common.email'), 'email', ['class' => 'required control-label col-xs-3']) ?>
     <div class="col-xs-8">
         <div class="input-group">
             <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-envelope"></span></span>
@@ -109,7 +109,7 @@
 </div>
 
 <div class="form-group form-group-sm">
-    <?= form_label(lang('Common.state'), 'state', ['class' => 'control-label col-xs-3']) ?>
+    <?= form_label(lang('Common.state'), 'state', ['class' => 'required control-label col-xs-3']) ?>
     <div class="col-xs-8">
         <?php if (isset($col_states)): ?>
             <select name="state" id="state" class="form-control input-sm">
@@ -130,7 +130,7 @@
 </div>
 
 <div class="form-group form-group-sm">
-    <?= form_label(lang('Common.city'), 'city', ['class' => 'control-label col-xs-3']) ?>
+    <?= form_label(lang('Common.city'), 'city', ['class' => 'required control-label col-xs-3']) ?>
     <div class="col-xs-8">
         <?php if (isset($col_cities)): ?>
             <select name="city" id="city" class="form-control input-sm" <?= empty($person_info->state) ? 'disabled' : '' ?>>
@@ -153,6 +153,18 @@
 </div>
 
 <div class="form-group form-group-sm">
+    <?= form_label(lang('Common.country'), 'country', ['class' => 'required control-label col-xs-3']) ?>
+    <div class="col-xs-8">
+        <?= form_input([
+            'name'  => 'country',
+            'id'    => 'country',
+            'class' => 'form-control input-sm',
+            'value' => $person_info->country
+        ]) ?>
+    </div>
+</div>
+
+<div class="form-group form-group-sm">
     <?= form_label(lang('Common.zip'), 'zip', ['class' => 'control-label col-xs-3']) ?>
     <div class="col-xs-8">
         <?= form_input([
@@ -160,18 +172,6 @@
             'id'    => 'postcode',
             'class' => 'form-control input-sm',
             'value' => $person_info->zip
-        ]) ?>
-    </div>
-</div>
-
-<div class="form-group form-group-sm">
-    <?= form_label(lang('Common.country'), 'country', ['class' => 'control-label col-xs-3']) ?>
-    <div class="col-xs-8">
-        <?= form_input([
-            'name'  => 'country',
-            'id'    => 'country',
-            'class' => 'form-control input-sm',
-            'value' => $person_info->country
         ]) ?>
     </div>
 </div>
