@@ -290,7 +290,7 @@ function send_pdf(array $sale_data, string $type = 'invoice', ?string $invoice_x
         if (file_put_contents($filename, create_pdf($html)) !== false) {
             $attachment = $filename;
 
-            if ($type == 'invoice' || $type == 'credit_note' || $type == 'debit_note' && !empty($invoice_xml)) {
+            if (($type == 'invoice' || $type == 'credit_note' || $type == 'debit_note') && !empty($invoice_xml)) {
                 $xml_filename = sys_get_temp_dir() . '/' . lang('Sales.' . $type) . '-' . str_replace('/', '-', $number) . '.xml';
                 file_put_contents($xml_filename, $invoice_xml);
 
