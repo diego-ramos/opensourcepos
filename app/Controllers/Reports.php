@@ -22,6 +22,7 @@ use App\Models\Reports\Summary_expenses_categories;
 use App\Models\Reports\Summary_items;
 use App\Models\Reports\Summary_payments;
 use App\Models\Reports\Summary_sales;
+use App\Models\Reports\Summary_dian_sales;
 use App\Models\Reports\Summary_sales_taxes;
 use App\Models\Reports\Summary_suppliers;
 use App\Models\Reports\Summary_taxes;
@@ -35,6 +36,7 @@ class Reports extends Secure_Controller
     private Customer $customer;
     private Stock_location $stock_location;
     private Summary_sales $summary_sales;
+    private Summary_dian_sales $summary_dian_sales;
     private Summary_sales_taxes $summary_sales_taxes;
     private Summary_categories $summary_categories;
     private Summary_expenses_categories $summary_expenses_categories;
@@ -62,6 +64,7 @@ class Reports extends Secure_Controller
         $this->customer = model(Customer::class);
         $this->stock_location = model(Stock_location::class);
         $this->summary_sales = model(Summary_sales::class);
+        $this->summary_dian_sales = model(Summary_dian_sales::class);
         $this->summary_sales_taxes = model(Summary_sales_taxes::class);
         $this->summary_categories = model(Summary_categories::class);
         $this->summary_expenses_categories = model(Summary_expenses_categories::class);
@@ -157,6 +160,53 @@ class Reports extends Secure_Controller
             'title'        => lang('Reports.sales_summary_report'),
             'subtitle'     => $this->_get_subtitle_report(['start_date' => $start_date, 'end_date' => $end_date]),
             'headers'      => $this->summary_sales->getDataColumns(),
+            'data'         => $tabular_data,
+            'summary_data' => $summary
+        ];
+
+        echo view('reports/tabular', $data);
+    }
+
+    /**
+     * Summary DIAN Sales Report.
+     * @param string $start_date
+     * @param string $end_date
+     * @param string $sale_type
+     * @param string $location_id
+     * @return void
+     */
+    public function summary_dian_sales(string $start_date, string $end_date, string $sale_type, string $location_id = 'all'): void
+    {
+        $this->clearCache();
+
+        $inputs = [
+            'start_date'  => $start_date,
+            'end_date'    => $end_date,
+            'sale_type'   => $sale_type,
+            'location_id' => $location_id
+        ];
+
+        $report_data = $this->summary_dian_sales->getData($inputs);
+        $summary = $this->summary_dian_sales->getSummaryData($inputs);
+
+        $tabular_data = [];
+        foreach ($report_data as $row) {
+            $tabular_data[] = [
+                'sale_month' => $row['sale_month'],
+                'sales'      => to_quantity_decimals($row['sales']),
+                'quantity'   => to_quantity_decimals($row['quantity_purchased']),
+                'subtotal'   => to_currency($row['subtotal']),
+                'tax'        => to_currency_tax($row['tax']),
+                'total'      => to_currency($row['total']),
+                'cost'       => to_currency($row['cost']),
+                'profit'     => to_currency($row['profit'])
+            ];
+        }
+
+        $data = [
+            'title'        => lang('Reports.dian_sales_summary_report'),
+            'subtitle'     => $this->_get_subtitle_report(['start_date' => $start_date, 'end_date' => $end_date]),
+            'headers'      => $this->summary_dian_sales->getDataColumns(),
             'data'         => $tabular_data,
             'summary_data' => $summary
         ];

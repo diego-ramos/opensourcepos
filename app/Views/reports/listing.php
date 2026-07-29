@@ -62,6 +62,9 @@ if (isset($error)) {
                     }
                 }
                 ?>
+                <?php if (in_array('reports_sales', $permission_ids, true)) { ?>
+                    <a class="list-group-item" href="<?= site_url('reports/summary_dian_sales') ?>"><?= lang('Reports.dian_sales') ?></a>
+                <?php } ?>
             </div>
         </div>
     </div>
